@@ -1,4 +1,4 @@
-using FDRWebsite.Client;
+using FDRWebsite.Client.Clients;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -12,7 +12,7 @@ namespace FDRWebsite.Client
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            builder.Services.AddRestClients(builder.HostEnvironment.BaseAddress);
 
             await builder.Build().RunAsync();
         }

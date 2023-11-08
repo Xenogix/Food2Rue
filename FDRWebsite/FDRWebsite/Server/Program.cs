@@ -1,4 +1,8 @@
+using FDRWebsite.Server.Repository;
+using FDRWebsite.Shared.Models;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace FDRWebsite
 {
@@ -12,6 +16,11 @@ namespace FDRWebsite
 
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
+            builder.Services.AddRepositories();
+
+            builder.Configuration.SetBasePath(AppDomain.CurrentDomain.BaseDirectory);
+            builder.Configuration.AddJsonFile("appsettings.json");
+            builder.Configuration.GetConnectionString("ProstgreSQLConnectionString");
 
             var app = builder.Build();
 
