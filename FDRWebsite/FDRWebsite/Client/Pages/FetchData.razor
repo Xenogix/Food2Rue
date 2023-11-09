@@ -1,4 +1,6 @@
 ﻿@page "/fetchdata"
+@using FDRWebsite.Client.Clients;
+@using FDRWebsite.Shared.Models;
 @using FDRWebsite.Shared
 @inject HttpClient Http
 
@@ -38,10 +40,13 @@ else
 }
 
 @code {
-    private WeatherForecast[]? forecasts;
+    private IEnumerable<WeatherForecast>? forecasts;
+
+    [Inject]
+    public required IWeatherForecastClient weatherForecastClient { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+        forecasts = await weatherForecastClient.GetAsync();
     }
 }
