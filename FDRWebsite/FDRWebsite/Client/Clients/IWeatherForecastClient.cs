@@ -2,7 +2,7 @@
 
 namespace FDRWebsite.Client.Clients
 {
-    public interface IWeatherForecastClient : IApiClientBase<WeatherForecast , int>
+    public interface IWeatherForecastClient : ICRUDApiClient<WeatherForecast , int>
     {
     }
 }

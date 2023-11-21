@@ -1,24 +1,13 @@
-using FDRWebsite.Server.Abstractions.Repository;
+using FDRWebsite.Server.Abstractions.Controllers;
+using FDRWebsite.Server.Abstractions.Repositories;
 using FDRWebsite.Shared.Models;
-using Microsoft.AspNetCore.Mvc;
 
 namespace FDRWebsite.Server.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class WeatherForecastController : ControllerBase
+    public class WeatherForecastController : CRUDController<WeatherForecast, int>
     {
-        private readonly IWeatherForecastRepository _forecastRepository;
-
-        public WeatherForecastController(IWeatherForecastRepository forecastRepository)
+        public WeatherForecastController(IRepositoryBase<WeatherForecast, int> repository) : base(repository)
         {
-            _forecastRepository = forecastRepository;
-        }
-
-        [HttpGet]
-        public async Task<IEnumerable<WeatherForecast>> GetAsync()
-        {
-            return await _forecastRepository.GetAsync();
         }
     }
 }

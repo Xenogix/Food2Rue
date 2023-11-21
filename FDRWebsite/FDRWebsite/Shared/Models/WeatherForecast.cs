@@ -1,8 +1,10 @@
+using FDRWebsite.Shared.Abstraction;
+
 namespace FDRWebsite.Shared.Models
 {
-    public class WeatherForecast
+    public class WeatherForecast : IIdentifiable<int>
     {
-        public int Id { get; set; }
+        public int ID { get; set; }
 
         public DateOnly Date { get; set; }
 

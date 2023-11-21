@@ -1,8 +1,4 @@
-using FDRWebsite.Server.Repository;
-using FDRWebsite.Shared.Models;
-using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
+using FDRWebsite.Server.Repositories;
 
 namespace FDRWebsite
 {

@@ -3,7 +3,7 @@
 namespace FDRWebsite.Client.Clients
 {
     [Headers("Content-Type: application/json")]
-    public interface IApiClientBase<ModelType, KeyType>
+    public interface ICRUDApiClient<ModelType, KeyType>
     {
         [Get("/")]
         Task<IEnumerable<ModelType>> GetAsync();
