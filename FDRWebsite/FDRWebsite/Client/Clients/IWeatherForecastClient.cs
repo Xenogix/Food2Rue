@@ -1,4 +1,5 @@
 ﻿using FDRWebsite.Shared.Models;
+using Refit;
 
 namespace FDRWebsite.Client.Clients
 {

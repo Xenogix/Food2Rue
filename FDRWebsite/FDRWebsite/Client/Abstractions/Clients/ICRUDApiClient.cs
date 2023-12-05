@@ -2,7 +2,8 @@
 
 namespace FDRWebsite.Client.Clients
 {
-    [Headers("Content-Type: application/json")]
+    [Headers("Content-Type: application/json",
+             "Authorization: Bearer")]
     public interface ICRUDApiClient<ModelType, KeyType>
     {
         [Get("/")]

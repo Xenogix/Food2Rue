@@ -1,4 +1,5 @@
 using FDRWebsite.Server.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace FDRWebsite
 {
@@ -9,6 +10,8 @@ namespace FDRWebsite
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddAuthentication()
+                .AddJwtBearer();
 
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
@@ -38,7 +41,7 @@ namespace FDRWebsite
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthorization();
 
             app.MapRazorPages();
             app.MapControllers();
