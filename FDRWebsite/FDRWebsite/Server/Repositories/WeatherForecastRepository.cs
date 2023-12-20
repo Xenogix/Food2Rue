@@ -6,13 +6,12 @@ namespace FDRWebsite.Server.Repositories
 {
     public class WeatherForecastRepository : IRepositoryBase<WeatherForecast, int>
     {
+        private const string TABLE_NAME = "weather";
+
         public async Task<IEnumerable<WeatherForecast>> GetAsync()
         {
             await Task.CompletedTask;
-
-            #pragma warning disable CS8601
             return new WeatherForecast[] { await GetAsync(0), await GetAsync(1), await GetAsync(2), await GetAsync(3) };
-            #pragma warning restore CS8601
         }
 
         public async Task<WeatherForecast?> GetAsync(int key)
