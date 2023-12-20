@@ -2,7 +2,6 @@
 @using FDRWebsite.Client.Clients;
 @using FDRWebsite.Shared.Models;
 @using FDRWebsite.Shared
-@inject HttpClient Http
 
 <PageTitle>Weather forecast</PageTitle>
 
@@ -39,14 +38,4 @@ else
     </table>
 }
 
-@code {
-    private IEnumerable<WeatherForecast>? forecasts;
 
-    [Inject]
-    public required IWeatherForecastClient weatherForecastClient { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        forecasts = await weatherForecastClient.GetAsync();
-    }
-}
