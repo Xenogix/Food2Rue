@@ -1,6 +1,5 @@
 ﻿using FDRWebsite.Server.Abstractions.Repositories;
 using FDRWebsite.Shared.Abstraction;
-using FDRWebsite.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FDRWebsite.Server.Abstractions.Controllers

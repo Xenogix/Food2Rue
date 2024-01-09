@@ -1,5 +1,6 @@
 using FDRWebsite.Server.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Npgsql;
 
 namespace FDRWebsite
 {
@@ -19,7 +20,15 @@ namespace FDRWebsite
 
             builder.Configuration.SetBasePath(AppDomain.CurrentDomain.BaseDirectory);
             builder.Configuration.AddJsonFile("appsettings.json");
-            builder.Configuration.GetConnectionString("ProstgreSQLConnectionString");
+
+            // Add database service
+            var connectionString = builder.Configuration.GetConnectionString("ProstgreSQLConnectionString");
+            builder.Services.AddScoped((provider) => {
+                var conn = new NpgsqlConnection(connectionString);
+                conn.Open();
+                return conn;
+            });
+
 
             var app = builder.Build();
 

@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FDRWebsite.Server", "FDRWebsite\Server\FDRWebsite.Server.csproj", "{B18D1907-670C-4E6B-8015-BFCF49E29E87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FDRWebsite.Server", "FDRWebsite\Server\FDRWebsite.Server.csproj", "{B18D1907-670C-4E6B-8015-BFCF49E29E87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FDRWebsite.Client", "FDRWebsite\Client\FDRWebsite.Client.csproj", "{9E0815AE-75A8-4BBF-BAED-459203CD3F4A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FDRWebsite.Client", "FDRWebsite\Client\FDRWebsite.Client.csproj", "{9E0815AE-75A8-4BBF-BAED-459203CD3F4A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FDRWebsite.Shared", "FDRWebsite\Shared\FDRWebsite.Shared.csproj", "{8F8A0D34-B9DC-47EA-8041-E2F15F849C3A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FDRWebsite.Shared", "FDRWebsite\Shared\FDRWebsite.Shared.csproj", "{8F8A0D34-B9DC-47EA-8041-E2F15F849C3A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
