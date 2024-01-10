@@ -20,23 +20,11 @@ namespace FDRWebsite.Shared.Models
 
         public required DateOnly BirthDate { get; set; }
 
-        public required DateTime Profile_Creation {  get; set; }
+        public required DateOnly Profile_Creation {  get; set; }
 
         public required String Description { get; set; }
 
         public required Pays Country { get; set; }
 
-        public Publication[]? Publications { get; set; }
-
-        public Recette[]? Recettes { get; set; }
-
-        public Publication[]? Aime { get; set; }
-
     }
-
-    public class Administrateur 
-    {
-    }
-
-
 }

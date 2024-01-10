@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace FDRWebsite.Server.Abstractions.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
-    public abstract class CRUDController<ModelType, KeyType> : ControllerBase 
+    [Route("api/[controller]s")]
+    public abstract class CRUDController<ModelType, KeyType> : ControllerBase
         where ModelType : IIdentifiable<KeyType>
         where KeyType : IEquatable<KeyType>
     {
@@ -23,7 +23,7 @@ namespace FDRWebsite.Server.Abstractions.Controllers
             return await repository.GetAsync();
         }
 
-        [HttpGet("id/{key}")]
+        [HttpGet("{key}")]
         public async Task<ModelType?> GetAsync(KeyType key)
         {
             return await repository.GetAsync(key);
@@ -41,13 +41,13 @@ namespace FDRWebsite.Server.Abstractions.Controllers
             return await repository.InsertAsync(model);
         }
 
-        [HttpPut]
+        [HttpPut("{key}")]
         public async Task<bool> PutAsync(KeyType key, ModelType model)
         {
             return await repository.UpdateAsync(key, model);
         }
 
-        [HttpDelete]
+        [HttpDelete("{key}")]
         public async Task<bool> DeleteAsync(KeyType key)
         {
             return await repository.DeleteAsync(key);

@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "BDR-food2rue",
+  "type": "collection",
+  "clientCertificates": {
+    "enabled": true,
+    "certs": []
+  }
+}

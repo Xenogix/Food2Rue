@@ -14,13 +14,5 @@ namespace FDRWebsite.Shared.Models
         public required User Utilisateur { get; set; }
         public Video? Video { get; set; }
         public Pays? Pays { get; set; }
-        public Image[]? Images { get; set; }
-        public Dictionary<User, int>? Note { get; set; }
-
-        public Tag[]? Tags { get; set; }
-
-        public required Dictionary<Ingredient, int>[] Ingredients { get; set; }
-        
-        public Ustensile[]? Ustensiles { get; set; }
     }
 }

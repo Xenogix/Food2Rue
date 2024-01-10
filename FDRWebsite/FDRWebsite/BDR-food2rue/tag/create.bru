@@ -1,0 +1,17 @@
+meta {
+  name: create
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:5253/api/tags
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "nom": "bariton"
+  }
+}

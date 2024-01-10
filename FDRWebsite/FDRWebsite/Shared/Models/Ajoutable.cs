@@ -12,15 +12,12 @@ namespace FDRWebsite.Shared.Models
         public required User utilisateur { get; set; }
         public User? administrateur { get; set; }
         public bool? est_valide { get; set; }
-        public Recette[]? recette { get; set; }
     }
 
     public class Ingredient : Ajoutable
     {
-        public Allergene[]? allergenes { get; set; }
     }
     public class Ustensile : Ajoutable
     {
-
     }
 }

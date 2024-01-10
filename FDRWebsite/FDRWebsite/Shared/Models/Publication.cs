@@ -17,12 +17,5 @@ namespace FDRWebsite.Shared.Models
         public Video? Video { get; set; }
 
         public Recette? Recette { get; set; }
-
-        public Image[]? Images { get; set; }
-
-        public User[]? Aime { get; set; }
-
-        public Tag[]? Tags { get; set; }
-
     }
 }

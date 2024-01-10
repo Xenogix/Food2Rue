@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FDRWebsite.Server.Abstractions.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]s")]
     public abstract class ReadonlyController<ModelType, KeyType> : ControllerBase
     where ModelType : IIdentifiable<KeyType>
     where KeyType : IEquatable<KeyType>
@@ -23,7 +23,7 @@ namespace FDRWebsite.Server.Abstractions.Controllers
             return await repository.GetAsync();
         }
 
-        [HttpGet("id/{key}")]
+        [HttpGet("{key}")]
         public async Task<ModelType?> GetAsync(KeyType key)
         {
             return await repository.GetAsync(key);
