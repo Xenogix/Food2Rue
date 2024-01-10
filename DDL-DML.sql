@@ -651,80 +651,80 @@ VALUES ('AF', 'Afghanistan'),
        ('ZM', 'Zambie'),
        ('ZW', 'Zimbabwe');
 
-INSERT INTO tag (id, nom)
-VALUES (1, 'digest'),
-       (2, 'healthy'),
-       (3, 'fit'),
-       (4, 'fastfood maison'),
-       (5, 'facile à faire'),
-       (6, 'rapide à faire'),
-       (7, 'anniversaire'),
-       (8, 'birthday cake'),
-       (9, 'viande crue'),
-       (10, 'hallal'),
-       (11, 'casher'),
-       (12, 'végétarien'),
-       (13, 'végétalien'),
-       (14, 'sans gluten'),
-       (15, 'sans lactose'),
-       (16, 'sans oeuf'),
-       (17, 'sans sucre'),
-       (18, 'sans sel'),
-       (19, 'sans matière grasse'),
-       (20, 'sans viande'),
-       (21, 'sans poisson'),
-       (22, 'sans fruits de mer'),
-       (23, 'sans crustacés'),
-       (24, 'sans arachide'),
-       (25, 'sans soja'),
-       (26, 'sans sésame'),
-       (27, 'sans lupin'),
-       (28, 'sans moutarde'),
-       (29, 'sans céleri'),
-       (30, 'sans sulfites'),
-       (31, 'sans fruits à coque'),
-       (32, 'sans mollusques'),
-       (33, 'sans alcool'),
-       (34, 'sans porc'),
-       (35, 'sans boeuf'),
-       (36, 'sans poulet'),
-       (37, 'sans agneau'),
-       (38, 'sans veau'),
-       (39, 'sans lapin'),
-       (40, 'sans canard'),
-       (41, 'sans dinde'),
-       (42, 'sans oie'),
-       (43, 'sans cheval'),
-       (44, 'sans gibier'),
-       (45, 'sans escargot'),
-       (46, 'sans grenouille'),
-       (47, 'sans insecte'),
-       (48, 'sans viande de brousse'),
-       (49, 'sans viande de chien'),
-       (50, 'sans viande de chat'),
-       (51, 'sans viande de rat'),
-       (52, 'sans viande de serpent'),
-       (53, 'sans viande de tortue'),
-       (54, 'sans viande de chameau'),
-       (55, 'sans viande de kangourou'),
-       (56, 'sans viande de crocodile'),
-       (57, 'sans viande de phoque'),
-       (58, 'sans viande de baleine'),
-       (59, 'sans viande de dauphin'),
-       (60, 'sans viande de requin');
+INSERT INTO tag (nom)
+VALUES ('digest'),
+        ('healthy'),
+        ('fit'),
+        ('fastfood maison'),
+        ('facile à faire'),
+        ('rapide à faire'),
+        ('anniversaire'),
+        ('birthday cake'),
+        ('viande crue'),
+        ('hallal'),
+        ('casher'),
+        ('végétarien'),
+        ('végétalien'),
+        ('sans gluten'),
+        ('sans lactose'),
+        ('sans oeuf'),
+        ('sans sucre'),
+        ('sans sel'),
+        ('sans matière grasse'),
+        ('sans viande'),
+        ('sans poisson'),
+        ('sans fruits de mer'),
+        ('sans crustacés'),
+        ('sans arachide'),
+        ('sans soja'),
+        ('sans sésame'),
+        ('sans lupin'),
+        ('sans moutarde'),
+        ('sans céleri'),
+        ('sans sulfites'),
+        ('sans fruits à coque'),
+        ('sans mollusques'),
+        ('sans alcool'),
+        ('sans porc'),
+        ('sans boeuf'),
+        ('sans poulet'),
+        ('sans agneau'),
+        ('sans veau'),
+        ('sans lapin'),
+        ('sans canard'),
+        ('sans dinde'),
+        ('sans oie'),
+        ('sans cheval'),
+        ('sans gibier'),
+        ('sans escargot'),
+        ('sans grenouille'),
+        ('sans insecte'),
+        ('sans viande de brousse'),
+        ('sans viande de chien'),
+        ('sans viande de chat'),
+        ('sans viande de rat'),
+        ('sans viande de serpent'),
+        ('sans viande de tortue'),
+        ('sans viande de chameau'),
+        ('sans viande de kangourou'),
+        ('sans viande de crocodile'),
+        ('sans viande de phoque'),
+        ('sans viande de baleine'),
+        ('sans viande de dauphin'),
+        ('sans viande de requin');
 
-INSERT INTO media (id, url_source)
-VALUES (1, './img/photo_profile_default.png');
+INSERT INTO media (url_source)
+VALUES ('./img/photo_profile_default.png');
 
 INSERT INTO image (id)
 VALUES (1);
 
-INSERT INTO utilisateur (id,nom, prénom, email, password, fk_photo_profil, pseudo, date_naissance, date_creation_profil, description, fk_pays)
-VALUES (1, 'John', 'Doe', 'john.doe@example.com', 'password', 1, 'johndoe', '1990-01-01', '2022-01-01', 'Lorem ipsum dolor sit amet', 65),
-       (2, 'Jane', 'Smith', 'jane.smith@example.com', 'password', 1, 'janesmith', '1995-02-15', '2022-01-01', 'Lorem ipsum dolor sit amet', 43),
-       (3, 'Mike', 'Johnson', 'mike.johnson@example.com', 'password', 1, 'mikejohnson', '1985-06-30', '2022-01-01', 'Lorem ipsum dolor sit amet', 87),
-       (4, 'Sarah', 'Williams', 'sarah.williams@example.com', 'password', 1, 'sarahwilliams', '1992-11-20', '2022-01-01', 'Lorem ipsum dolor sit amet', 100),
-       (5, 'David', 'Brown', 'david.brown@example.com', 'password', 1, 'davidbrown', '1998-09-10', '2022-01-01', 'Lorem ipsum dolor sit amet', 73);
+INSERT INTO utilisateur (nom, prénom, email, password, fk_photo_profil, pseudo, date_naissance, date_creation_profil, description, fk_pays)
+VALUES ('John', 'Doe', 'john.doe@example.com', 'password', 1, 'johndoe', '1990-01-01', '2022-01-01', 'Lorem ipsum dolor sit amet', 65),
+        ('Jane', 'Smith', 'jane.smith@example.com', 'password', 1, 'janesmith', '1995-02-15', '2022-01-01', 'Lorem ipsum dolor sit amet', 43),
+        ('Mike', 'Johnson', 'mike.johnson@example.com', 'password', 1, 'mikejohnson', '1985-06-30', '2022-01-01', 'Lorem ipsum dolor sit amet', 87),
+        ('Sarah', 'Williams', 'sarah.williams@example.com', 'password', 1, 'sarahwilliams', '1992-11-20', '2022-01-01', 'Lorem ipsum dolor sit amet', 100),
+        ('David', 'Brown', 'david.brown@example.com', 'password', 1, 'davidbrown', '1998-09-10', '2022-01-01', 'Lorem ipsum dolor sit amet', 73);
 
 INSERT INTO administrateur (id)
 VALUES (1), (4);
@@ -745,16 +745,16 @@ VALUES ('Oeufs'),
        ('Celeri'),
        ('Moutarde');
 
-INSERT INTO media (id, url_source)
-VALUES (2,'./img/Cuillere.png'),
-       (3,'./img/Fourchette.png'),
-       (4,'./img/Couteau.png'),
-       (5,'./img/Assiette.png'),
-       (6,'./img/Casserole.png'),
-       (7,'./img/Poele.png'),
-       (8,'./img/Pince.png'),
-       (9,'./img/Eplucheuse.png'),
-       (10,'./img/CuiseurVapeur.png');
+INSERT INTO media (url_source)
+VALUES ('./img/Cuillere.png'),
+        ('./img/Fourchette.png'),
+        ('./img/Couteau.png'),
+        ('./img/Assiette.png'),
+        ('./img/Casserole.png'),
+        ('./img/Poele.png'),
+        ('./img/Pince.png'),
+        ('./img/Eplucheuse.png'),
+        ('./img/CuiseurVapeur.png');
       
 INSERT INTO image (id)
 VALUES (2),
@@ -767,16 +767,16 @@ VALUES (2),
      (9),
      (10);
 
-INSERT INTO ajoutable (id, nom, description, date_publication, fk_image, fk_utilisateur, fk_administrateur, est_valide)
-VALUES (1, 'Cuillere', 'Fourchette sans dent pour manger les soupes et les desserts', '2022-12-01', 2, 1, 1, true),
-       (2, 'Fourchette', 'Fourchette avec 4 dents pour manger les plats', '2022-12-01', 3, 2, 1, true),
-       (3, 'Couteau', 'Couteau pour couper les aliments', '2022-12-01', 4, 3, 4, true),
-       (4, 'Assiette', 'Assiette pour mettre les aliments', '2022-12-01', 5, 4, 4, true),
-       (5, 'Casserole', 'Casserole pour faire cuire les aliments', '2022-12-01', 6, 5, 1, true),
-       (6, 'Poêle à frire', 'Poêle à frire pour faire cuire les aliments', '2022-12-01', 7, 1, 1, true),
-       (7, 'Pince', 'Pince pour attraper les aliments', '2022-12-01', 8, 2, 1, true),
-       (8, 'Éplucheuse', 'Éplucheuse pour éplucher les aliments', '2022-12-01', 9, 3, 1, true),
-       (9, 'Cuiseur vapeur', 'Cuiseur vapeur pour cuire les aliments à la vapeur', '2022-12-01', 10, 4, 1, true);
+INSERT INTO ajoutable (nom, description, date_publication, fk_image, fk_utilisateur, fk_administrateur, est_valide)
+VALUES ('Cuillere', 'Fourchette sans dent pour manger les soupes et les desserts', '2022-12-01', 2, 1, 1, true),
+        ('Fourchette', 'Fourchette avec 4 dents pour manger les plats', '2022-12-01', 3, 2, 1, true),
+        ('Couteau', 'Couteau pour couper les aliments', '2022-12-01', 4, 3, 4, true),
+        ('Assiette', 'Assiette pour mettre les aliments', '2022-12-01', 5, 4, 4, true),
+        ('Casserole', 'Casserole pour faire cuire les aliments', '2022-12-01', 6, 5, 1, true),
+        ('Poêle à frire', 'Poêle à frire pour faire cuire les aliments', '2022-12-01', 7, 1, 1, true),
+        ('Pince', 'Pince pour attraper les aliments', '2022-12-01', 8, 2, 1, true),
+        ('Éplucheuse', 'Éplucheuse pour éplucher les aliments', '2022-12-01', 9, 3, 1, true),
+        ('Cuiseur vapeur', 'Cuiseur vapeur pour cuire les aliments à la vapeur', '2022-12-01', 10, 4, 1, true);
       
 INSERT INTO ustensile (id)
 VALUES (1),
@@ -789,11 +789,11 @@ VALUES (1),
        (8),
        (9);
 
-INSERT INTO media (id, url_source)
-VALUES (11,'./img/pouletFermier.png'),
-       (12,'./img/curry.png'),
-       (13,'./img/riz.png'),
-       (14,'./img/schnaps.png');
+INSERT INTO media (url_source)
+VALUES ('./img/pouletFermier.png'),
+        ('./img/curry.png'),
+        ('./img/riz.png'),
+        ('./img/schnaps.png');
       
 INSERT INTO image (id)
 VALUES (11),
@@ -801,11 +801,11 @@ VALUES (11),
      (13),
      (14);
 
-INSERT INTO ajoutable (id, nom, description, date_publication, fk_image, fk_utilisateur, fk_administrateur, est_valide)
-VALUES (10, 'Poulet fermier', 'Poulet de ferme', '2022-12-01', 11, 2, 1, true),
-       (11, 'Curry', 'Curry de la marque X', '2022-12-01', 12, 2, NULL, false),
-       (12, 'Riz', 'Riz de la marque Y', '2022-12-01', 13, 2, NULL, false),
-       (13, 'Schnaps', 'Schnaps de la marque Z', '2022-12-01', 14, 2, NULL, true);
+INSERT INTO ajoutable (nom, description, date_publication, fk_image, fk_utilisateur, fk_administrateur, est_valide)
+VALUES ('Poulet fermier', 'Poulet de ferme', '2022-12-01', 11, 2, 1, true),
+        ('Curry', 'Curry de la marque X', '2022-12-01', 12, 2, NULL, false),
+        ('Riz', 'Riz de la marque Y', '2022-12-01', 13, 2, NULL, false),
+        ('Schnaps', 'Schnaps de la marque Z', '2022-12-01', 14, 2, NULL, true);
       
 INSERT INTO ingredient (id)
 VALUES (10),
@@ -813,8 +813,8 @@ VALUES (10),
        (12),
        (13);
       
-INSERT INTO media (id, url_source)
-VALUES (15,'./img/pouletCurry.mp4');
+INSERT INTO media (url_source)
+VALUES ('./img/pouletCurry.mp4');
       
 INSERT INTO video (id)
 VALUES (15);
@@ -855,8 +855,8 @@ VALUES ('Ma première recette ;D', '2022-12-01', NULL, 1, NULL, 1),
        ('Je vais essayer', '2022-12-01', 1, 3, NULL, NULL),
        ('Regarde mon resulta', '2022-12-01', 1, 5, NULL, NULL);
 
-INSERT INTO media (id, url_source)
-VALUES (16,'./img/maversion124324.png');
+INSERT INTO media (url_source)
+VALUES ('./img/maversion124324.png');
 
 INSERT INTO image (id)
 VALUES (16);
