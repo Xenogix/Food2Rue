@@ -5,27 +5,26 @@ meta {
 }
 
 post {
-  url: http://localhost:5253/api/users/
+  url: http://localhost:5253/api/user/
   body: json
   auth: none
 }
 
 body:json {
   {
-    "id": 0,
-    "firstName": "Freddi",
-    "lastName": "Mercury",
+    "prénom": "Freddi",
+    "nom": "Mercury",
     "email": "freddi.mercury@example.com",
-    "profile_photo": {
+    "photo_Profil": {
       "id": 1,
       "urL_Source": "./img/photo_profile_default.png"
     },
     "pseudo": "Freddo",
     "password": "password",
-    "birthDate": "0001-01-01",
-    "profile_Creation": "0001-01-01",
+    "date_Naissance": "2001-01-03",
+    "Date_creation_profil": "2002-01-01",
     "description": "Lorem ipsum dolor sit amet",
-    "country": {
+    "pays": {
       "id": 80,
       "sigle": "",
       "nom": ""

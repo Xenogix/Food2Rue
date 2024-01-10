@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FDRWebsite.Server.Abstractions.Controllers
 {
     [ApiController]
-    [Route("api/[controller]s")]
+    [Route("api/[controller]")]
     public abstract class ReadonlyController<ModelType, KeyType> : ControllerBase
     where ModelType : IIdentifiable<KeyType>
     where KeyType : IEquatable<KeyType>

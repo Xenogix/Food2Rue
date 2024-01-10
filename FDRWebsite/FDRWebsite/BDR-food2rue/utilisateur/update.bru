@@ -4,8 +4,30 @@ meta {
   seq: 4
 }
 
-patch {
-  url: http://localhost:5253/api/users
-  body: none
+put {
+  url: http://localhost:5253/api/user/8
+  body: json
   auth: none
+}
+
+body:json {
+  {
+    "prénom": "Mercury",
+    "nom": "Freddi",
+    "email": "freddi.mercury@example.com",
+    "photo_Profil": {
+      "id": 1,
+      "urL_Source": "./img/photo_profile_default.png"
+    },
+    "pseudo": "Freddo",
+    "password": "password",
+    "date_Naissance": "2001-01-03T00:00:00",
+    "date_Creation_Profil": "2010-01-01T00:00:00",
+    "description": "Lorem ipsum dolor sit amet",
+    "pays": {
+      "id": 80,
+      "sigle": "DE",
+      "nom": "Allemagne"
+    }
+  }
 }
