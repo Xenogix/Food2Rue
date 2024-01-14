@@ -2,10 +2,9 @@
 
 namespace FDRWebsite.Shared.Models
 {
-    public class User : IIdentifiable<int>
+    public class Utilisateur : IIdentifiable<int>
     {
         public int ID { get; set; }
-        //nom, prénom, email, fk_photo_profil, pseudo, password, date_naissance, date_creation_profil, description, fk_pays
         public required String Prénom { get; set; }
 
         public required String Nom { get; set; }

@@ -7,13 +7,13 @@ using System.Data;
 
 namespace FDRWebsite.Server.Repositories
 {
-    public class ImageRepository : IRepositoryBase<Image, int>
+    public class VideoRepository : IRepositoryBase<Video, int>
     {
-        private const string TABLE_NAME = "image";
+        private const string TABLE_NAME = "video";
 
         private readonly NpgsqlConnection connection;
 
-        public ImageRepository(NpgsqlConnection connection)
+        public VideoRepository(NpgsqlConnection connection)
         {
             this.connection = connection;
         }
@@ -31,17 +31,17 @@ namespace FDRWebsite.Server.Repositories
             return affectedRows > 0;
         }
 
-        public async Task<IEnumerable<Image>> GetAsync()
+        public async Task<IEnumerable<Video>> GetAsync()
         {
-            return await connection.QueryAsync<Image>(
+            return await connection.QueryAsync<Video>(
                 $@"SELECT {TABLE_NAME}.id, url_source FROM {TABLE_NAME}
                 INNER JOIN media ON media.id = {TABLE_NAME}.id
                 ;");
         }
 
-        public async Task<Image?> GetAsync(int key)
+        public async Task<Video?> GetAsync(int key)
         {
-            IEnumerable<Image> temps = await GetAsync();
+            IEnumerable<Video> temps = await GetAsync();
             var U = temps.Where(temp => temp.ID == key).ToList();
             if (U.Count == 0)
                 return null;
@@ -49,16 +49,16 @@ namespace FDRWebsite.Server.Repositories
                 return U[0];
         }
 
-        public async Task<IEnumerable<Image>> GetAsync(IFilter<Image> modelFilter)
+        public async Task<IEnumerable<Video>> GetAsync(IFilter<Video> modelFilter)
         {
-            return await connection.QueryAsync<Image>(
+            return await connection.QueryAsync<Video>(
                 $@"SELECT {TABLE_NAME}.id, url_source FROM {TABLE_NAME}
                 INNER JOIN media ON media.id = {TABLE_NAME}.id
                 WHERE {modelFilter.GetFilterSQL}
                 ;");
         }
 
-        public async Task<int> InsertAsync(Image model)
+        public async Task<int> InsertAsync(Video model)
         {
             var Transaction = connection.BeginTransaction();
             int idmedia = await connection.QueryFirstAsync<int>(
@@ -77,12 +77,8 @@ namespace FDRWebsite.Server.Repositories
             return idmedia;
         }
 
-        public async Task<bool> UpdateAsync(int key, Image model)
+        public async Task<bool> UpdateAsync(int key, Video model)
         {
-            if (!model.ID.Equals(0) && key != model.ID)
-            {
-                return false;
-            }
             var row = await connection.ExecuteAsync(
                 @$"UPDATE media SET url_source = @URL_Source WHERE id = @Id",
             new

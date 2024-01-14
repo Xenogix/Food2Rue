@@ -1,4 +1,5 @@
 ﻿using FDRWebsite.Shared.Abstraction;
+using System.Runtime.InteropServices;
 
 namespace FDRWebsite.Shared.Models
 {
@@ -11,7 +12,7 @@ namespace FDRWebsite.Shared.Models
         public int? Temps_Repos { get; set; }
         public required DateTime Date_Creation { get; set; }
         public required String Etape { get; set; }
-        public required User Utilisateur { get; set; }
+        public required int Fk_Utilisateur { get; set; }
         public Video? Video { get; set; }
         public Pays? Pays { get; set; }
     }

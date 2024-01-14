@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace FDRWebsite.Server.Controllers
 {
-    public class UserController : CRUDController<User, int>
+    public class UserController : CRUDController<Utilisateur, int>
     {
-        public UserController(IRepositoryBase<User, int> repository) : base(repository)
+        public UserController(IRepositoryBase<Utilisateur, int> repository) : base(repository)
         {
         }
     }

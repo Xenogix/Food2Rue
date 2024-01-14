@@ -6,13 +6,13 @@ using Npgsql;
 
 namespace FDRWebsite.Server.Repositories
 {
-    public class UserRepository : IRepositoryBase<User, int>
+    public class UtilisateurRepository : IRepositoryBase<Utilisateur, int>
     {
         private const string TABLE_NAME = "utilisateur";
 
         private readonly NpgsqlConnection connection;
 
-        public UserRepository(NpgsqlConnection connection)
+        public UtilisateurRepository(NpgsqlConnection connection)
         {
             this.connection = connection;
         }
@@ -30,9 +30,9 @@ namespace FDRWebsite.Server.Repositories
             return affectedRows > 0;
         }
 
-        public async Task<IEnumerable<User>> GetAsync()
+        public async Task<IEnumerable<Utilisateur>> GetAsync()
         {
-            return await connection.QueryAsync<User, Image, Pays, User>(
+            return await connection.QueryAsync<Utilisateur, Image, Pays, Utilisateur>(
                 $@"SELECT {TABLE_NAME}.id, {TABLE_NAME}.nom, {TABLE_NAME}.prénom, {TABLE_NAME}.email, {TABLE_NAME}.pseudo, {TABLE_NAME}.password, {TABLE_NAME}.description, {TABLE_NAME}.date_naissance, {TABLE_NAME}.date_creation_profil, media.id, media.url_source, pays.id, pays.sigle, pays.nom FROM {TABLE_NAME} 
                 LEFT JOIN media ON {TABLE_NAME}.fk_photo_profil = media.id
                 LEFT JOIN pays ON {TABLE_NAME}.fk_pays = pays.id
@@ -46,9 +46,9 @@ namespace FDRWebsite.Server.Repositories
                 splitOn: "id,id");
         }
 
-        public async Task<User?> GetAsync(int key)
+        public async Task<Utilisateur?> GetAsync(int key)
         {
-            IEnumerable<User> temps = (IEnumerable<User>)await GetAsync();
+            IEnumerable<Utilisateur> temps = (IEnumerable<Utilisateur>)await GetAsync();
             var U = temps.Where(temp => temp.ID == key).ToList();
             if (U.Count == 0)
                 return null;
@@ -56,9 +56,9 @@ namespace FDRWebsite.Server.Repositories
                 return U[0];
         }
 
-        public async Task<IEnumerable<User>> GetAsync(IFilter<User> modelFilter)
+        public async Task<IEnumerable<Utilisateur>> GetAsync(IFilter<Utilisateur> modelFilter)
         {
-            return await connection.QueryAsync<User, Image, Pays, User>(
+            return await connection.QueryAsync<Utilisateur, Image, Pays, Utilisateur>(
                 $@"SELECT {TABLE_NAME}.id, {TABLE_NAME}.nom, {TABLE_NAME}.prénom, {TABLE_NAME}.email, {TABLE_NAME}.pseudo, {TABLE_NAME}.password, {TABLE_NAME}.date_naissance, {TABLE_NAME}.date_creation_profil, {TABLE_NAME}.description, media.id, media.url_source, pays.id, pays.sigle, pays.nom FROM {TABLE_NAME} 
                 LEFT JOIN media ON {TABLE_NAME}.fk_photo_profil = media.id
                 LEFT JOIN pays ON {TABLE_NAME}.fk_pays = pays.id 
@@ -73,7 +73,7 @@ namespace FDRWebsite.Server.Repositories
                 splitOn: "id,id");
         }
 
-        public async Task<int> InsertAsync(User model)
+        public async Task<int> InsertAsync(Utilisateur model)
         {
             return await connection.QueryFirstAsync<int>(
                 @$"INSERT INTO {TABLE_NAME} (nom, prénom, email, fk_photo_profil, pseudo, password, date_naissance, date_creation_profil, description, fk_pays) VALUES 
@@ -93,8 +93,12 @@ namespace FDRWebsite.Server.Repositories
                 });
         }
 
-        public async Task<bool> UpdateAsync(int key, User model)
+        public async Task<bool> UpdateAsync(int key, Utilisateur model)
         {
+            if (!model.ID.Equals(0) && key != model.ID)
+            {
+                return false;
+            }
             var row =  await connection.ExecuteAsync(
                 $"UPDATE {TABLE_NAME} SET " +
                         $"nom = @FirstName, " +

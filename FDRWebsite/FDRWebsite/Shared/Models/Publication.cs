@@ -10,12 +10,12 @@ namespace FDRWebsite.Shared.Models
 
         public required DateOnly Date_Publication { get; set; }
 
-        public Publication? Parent { get; set; }
+        public int? Parent { get; set; }
 
-        public required User Utilisateur { get; set; }
+        public required int Utilisateur { get; set; }
 
         public Video? Video { get; set; }
 
-        public Recette? Recette { get; set; }
+        public int? Recette { get; set; }
     }
 }
