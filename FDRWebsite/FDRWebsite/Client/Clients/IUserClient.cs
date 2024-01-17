@@ -3,7 +3,7 @@ using Refit;
 
 namespace FDRWebsite.Client.Clients
 {
-    public interface IUserClient : ICRUDApiClient<User, int>
+    public interface IUserClient : ICRUDApiClient<Utilisateur, int>
     {
     }
 }

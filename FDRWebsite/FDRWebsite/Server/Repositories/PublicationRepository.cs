@@ -4,6 +4,7 @@ using FDRWebsite.Shared.Abstraction;
 using FDRWebsite.Shared.Models;
 using Npgsql;
 using System.Data;
+using System.Text.RegularExpressions;
 
 namespace FDRWebsite.Server.Repositories
 {
@@ -30,40 +31,106 @@ namespace FDRWebsite.Server.Repositories
 
             return affectedRows > 0;
         }
-
+        
         public async Task<IEnumerable<Publication>> GetAsync()
         {
-            return await connection.QueryAsync<Publication>(
-                $@"SELECT id, texte, date_publication, fk_parent, fk_utilisateur, fk_recette, fk_video FROM {TABLE_NAME}
+            IEnumerable<Publication> Publications = await connection.QueryAsync<Publication, Video, Publication>(
+                $@"SELECT {TABLE_NAME}.id, {TABLE_NAME}.texte, {TABLE_NAME}.date_publication, {TABLE_NAME}.fk_parent, {TABLE_NAME}.fk_utilisateur, {TABLE_NAME}.fk_recette, COUNT(aime_publication_utilisateur.fk_utilisateur) AS aime, video.id, media.url_source FROM {TABLE_NAME}
                 LEFT JOIN media ON media.id = {TABLE_NAME}.id
-                INNER JOIN video ON video.id = media.id
-                ;");
+                LEFT JOIN video ON video.id = media.id
+                LEFT JOIN aime_publication_utilisateur ON aime_publication_utilisateur.fk_publication = publication.id
+                GROUP BY {TABLE_NAME}.id, {TABLE_NAME}.texte, {TABLE_NAME}.date_publication, {TABLE_NAME}.fk_parent, {TABLE_NAME}.fk_utilisateur, {TABLE_NAME}.fk_recette, media.id, media.url_source;",
+                (Publication, Video) =>
+                {
+                    Publication.Video = Video;
+                    return Publication;
+                },
+                splitOn: "id,id")
+                ;
+            foreach (Publication Publication in Publications)
+            {
+                Publication.Images = await connection.QueryAsync<Image>(
+                    $@"SELECT id, url_source FROM image
+                INNER JOIN media ON media.id = image.id
+                INNER JOIN publication_image ON publication_image.fk_image = image.id
+                INNER JOIN publication ON publication.id = publication_image.fk_publication
+                WHERE publication.id = @Id;",
+                    new
+                    {
+                        Id = Publication.ID
+                    });
+            }
+            return Publications;
         }
 
 
         public async Task<Publication?> GetAsync(int key)
         {
-            IEnumerable<Publication> temps = await GetAsync();
-            var U = temps.Where(temp => temp.ID == key).ToList();
-            if (U.Count == 0)
-                return null;
-            else
-                return U[0];
+            Publication Publication = (Publication)await connection.QueryAsync<Publication, Video, Publication>(
+                $@"SELECT {TABLE_NAME}.id, {TABLE_NAME}.texte, {TABLE_NAME}.date_publication, {TABLE_NAME}.fk_parent, {TABLE_NAME}.fk_utilisateur, {TABLE_NAME}.fk_recette, COUNT(aime_publication_utilisateur.fk_utilisateur) AS aime, video.id, media.url_source FROM {TABLE_NAME}
+                LEFT JOIN media ON media.id = {TABLE_NAME}.id
+                LEFT JOIN video ON video.id = media.id
+                LEFT JOIN aime_publication_utilisateur ON aime_publication_utilisateur.fk_publication = publication.id
+                WHERE {TABLE_NAME}.id = @Id
+                GROUP BY {TABLE_NAME}.id, {TABLE_NAME}.texte, {TABLE_NAME}.date_publication, {TABLE_NAME}.fk_parent, {TABLE_NAME}.fk_utilisateur, {TABLE_NAME}.fk_recette, media.id, media.url_source;",
+                (Publication, Video) =>
+                {
+                    Publication.Video = Video;
+                    return Publication;
+                },
+                splitOn: "id,id")
+                ;
+            Publication.Images = await connection.QueryAsync<Image>(
+                $@"SELECT id, url_source FROM image
+                INNER JOIN media ON media.id = image.id
+                INNER JOIN publication_image ON publication_image.fk_image = image.id
+                INNER JOIN publication ON publication.id = publication_image.fk_publication
+                WHERE publication.id = @Id;",
+                new
+                {
+                    Id = Publication.ID
+                });
+            return Publication;
         }
 
         public async Task<IEnumerable<Publication>> GetAsync(IFilter<Publication> modelFilter)
         {
-            return await connection.QueryAsync<Publication>(
-                $@"SELECT id, texte, date_publication, fk_parent, fk_utilisateur, fk_recette, fk_video FROM {TABLE_NAME}
+            IEnumerable<Publication> Publications = await connection.QueryAsync<Publication, Video, Publication>(
+                $@"SELECT {TABLE_NAME}.id, {TABLE_NAME}.texte, {TABLE_NAME}.date_publication, {TABLE_NAME}.fk_parent, {TABLE_NAME}.fk_utilisateur, {TABLE_NAME}.fk_recette, COUNT(aime_publication_utilisateur.fk_utilisateur) AS aime, video.id, media.url_source FROM {TABLE_NAME}
                 LEFT JOIN media ON media.id = {TABLE_NAME}.id
-                INNER JOIN video ON video.id = media.id
+                LEFT JOIN video ON video.id = media.id
+                LEFT JOIN aime_publication_utilisateur ON aime_publication_utilisateur.fk_publication = publication.id
                 WHERE {modelFilter.GetFilterSQL}
-                ;");
+                GROUP BY {TABLE_NAME}.id, {TABLE_NAME}.texte, {TABLE_NAME}.date_publication, {TABLE_NAME}.fk_parent, {TABLE_NAME}.fk_utilisateur, {TABLE_NAME}.fk_recette, media.id, media.url_source;",
+                (Publication, Video) =>
+                {
+                    Publication.Video = Video;
+                    return Publication;
+                },
+                splitOn: "id,id")
+                ;
+            foreach (Publication Publication in Publications)
+            {
+                Publication.Images = await connection.QueryAsync<Image>(
+                    $@"SELECT id, url_source FROM image
+                INNER JOIN media ON media.id = image.id
+                INNER JOIN publication_image ON publication_image.fk_image = image.id
+                INNER JOIN publication ON publication.id = publication_image.fk_publication
+                WHERE publication.id = @Id;",
+                    new
+                    {
+                        Id = Publication.ID
+                    });
+            }
+            return Publications;
         }
 
         public async Task<int> InsertAsync(Publication model)
         {
-            return await connection.QueryFirstAsync<int>(
+            ImageRepository imageRepository = new ImageRepository(connection);
+            IDbTransaction transaction = connection.BeginTransaction();
+
+            int id = await connection.QueryFirstAsync<int>(
                 $@"INSERT INTO {TABLE_NAME} (texte, date_publication, fk_parent, fk_utilisateur, fk_recette, fk_video) VALUES 
                 (@Texte, @Date_Publication, @Fk_Parent, @Fk_Utilisateur, @Fk_Recette, @Fk_Video)",
                 new
@@ -74,26 +141,24 @@ namespace FDRWebsite.Server.Repositories
                     Fk_Utilisateur = model.Utilisateur,
                     Fk_Recette = model.Recette,
                     Fk_Video = model.Video.ID
-                });
+                },
+                transaction);
+            string tempValues = "";
+            foreach (Image Image in model.Images)
+            {
+                if(await imageRepository.InsertAsync(Image)!=0)
+                    tempValues = $"({id}, {Image.ID}),";
+            }
+
+            await connection.QueryFirstAsync<int>(
+                $@"INSERT INTO publication_image (fk_publication, fk_image) VALUES 
+                    @Values",
+                new { Values = tempValues },
+                transaction);
+            return id;
         }
 
         public async Task<bool> UpdateAsync(int key, Publication model)
-        {
-            if (!model.ID.Equals(0) && key != model.ID)
-            {
-                return false;
-            }
-            var row = await connection.ExecuteAsync(
-                @$"UPDATE media SET url_source = @URL_Source WHERE id = @Id",
-            new
-            {
-                URL_Source = model.URL_Source,
-                Id = key
-            });
-
-            return row > 0;
-        }
-        public async Task<bool> UpdateAsync(int key, Publication model, Media mediaModel, Video videoModel)
         {
             if (!model.ID.Equals(0) && key != model.ID)
             {
