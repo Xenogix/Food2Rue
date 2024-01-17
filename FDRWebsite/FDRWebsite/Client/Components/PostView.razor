@@ -1,0 +1,36 @@
+﻿<div class="w-100">
+
+    <!-- User profile -->
+    <div class="d-flex w-100 mb-3 gap-3">
+        <img class="rounded-circle" style="height:3rem" src="@user?.Photo_Profil?.URL_Source" />
+        <div class="d-flex flex-column justify-content-center">
+            <p class="m-0">@(user?.Nom ?? string.Empty)</p>
+        </div>
+    </div>
+
+    <!-- Description-->
+    <h3>@Post.Texte</h3>
+    
+    <div class="p-4">
+
+        <!-- Media carousel -->
+        <StackCarousel></StackCarousel>
+
+        <!-- Interaction buttons -->
+        <div class="d-flex position-relative mx-4 interaction-box overflow-hidden">
+            <div class="interaction-button like-button" role="button" @onclick="OnLikeClick">
+                <i class="fa-solid fa-heart"></i>
+                <p>928</p>
+            </div>
+            <div class="interaction-button" role="button" @onclick="OnCommentClick">
+                <i class="fa-solid fa-message"></i>
+                <p>120</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Padding for bottom content -->
+    <div class="mb-5"></div>
+
+</div>

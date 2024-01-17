@@ -99,7 +99,10 @@ namespace FDRWebsite.Server.Repositories
                 $@"SELECT {TABLE_NAME}.id, {TABLE_NAME}.texte, {TABLE_NAME}.date_publication, {TABLE_NAME}.fk_parent, {TABLE_NAME}.fk_utilisateur, {TABLE_NAME}.fk_recette, COUNT(aime_publication_utilisateur.fk_utilisateur) AS aime, video.id, media.url_source FROM {TABLE_NAME}
                 LEFT JOIN media ON media.id = {TABLE_NAME}.id
                 LEFT JOIN video ON video.id = media.id
+<<<<<<< HEAD
                 LEFT JOIN aime_publication_utilisateur ON aime_publication_utilisateur.fk_publication = publication.id
+=======
+>>>>>>> 081310650bd9d49378540a2bda31e9d9f2a5bf94
                 WHERE {modelFilter.GetFilterSQL}
                 GROUP BY {TABLE_NAME}.id, {TABLE_NAME}.texte, {TABLE_NAME}.date_publication, {TABLE_NAME}.fk_parent, {TABLE_NAME}.fk_utilisateur, {TABLE_NAME}.fk_recette, media.id, media.url_source;",
                 (Publication, Video) =>
@@ -138,7 +141,7 @@ namespace FDRWebsite.Server.Repositories
                     Texte = model.Texte,
                     Date_Publication = model.Date_Publication,
                     Fk_Parent = model.Parent,
-                    Fk_Utilisateur = model.Utilisateur,
+                    Fk_Utilisateur = model.FK_Utilisateur,
                     Fk_Recette = model.Recette,
                     Fk_Video = model.Video.ID
                 },
@@ -165,6 +168,22 @@ namespace FDRWebsite.Server.Repositories
                 return false;
             }
             var row = await connection.ExecuteAsync(
+                @$"UPDATE media SET url_source = @URL_Source WHERE id = @Id",
+            new
+            {
+                //URL_Source = model.URL_Source,
+                Id = key
+            });
+
+            return row > 0;
+        }
+        public async Task<bool> UpdateAsync(int key, Publication model, Media mediaModel, Video videoModel)
+        {
+            if (!model.ID.Equals(0) && key != model.ID)
+            {
+                return false;
+            }
+            var row = await connection.ExecuteAsync(
                 @$"UPDATE {TABLE_NAME} SET 
                 texte = @Texte, 
                 date_publication = @Date_Publication, 
@@ -178,7 +197,7 @@ namespace FDRWebsite.Server.Repositories
                     Texte = model.Texte,
                     Date_Publication = model.Date_Publication,
                     Fk_Parent = model.Parent,
-                    Fk_Utilisateur = model.Utilisateur,
+                    Fk_Utilisateur = model.FK_Utilisateur,
                     Fk_Recette = model.Recette,
                     Fk_Video = model.Video.ID,
                     Id = key

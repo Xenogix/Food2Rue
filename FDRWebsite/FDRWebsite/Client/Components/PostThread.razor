@@ -1,0 +1,21 @@
+﻿
+<div class="d-flex justify-content-center w-100">
+    @if (!posts.Any())
+    {
+        <div class="d-flex flex-column">
+            <i class="fa-solid fa-fire mx-auto m-4" style="font-size:4em"></i>
+            <h3 class="mx-auto">Il n'y a rien ici pour le moment !</h3>
+            <h3 class="mx-auto">Postez une publication ou revenez plus tard</h3>
+        </div>
+    }
+    else
+    {
+        <div class="d-block w-100" style="max-width:35rem">
+            @foreach (var post in posts)
+            {
+                <PostView post="@post"></PostView>
+            }
+        </div>
+    }
+</div>
+

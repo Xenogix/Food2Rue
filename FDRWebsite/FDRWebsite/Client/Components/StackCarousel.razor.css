@@ -1,0 +1,11 @@
+﻿.carousel-image {
+    padding-right: 100%;
+    position: absolute;
+    background-size: cover;
+    background-position: center;
+    border-radius: 2rem;
+
+    transition-property: top, bottom, left, right, opacity;
+    transition-duration: 0.5s;
+    transition-timing-function: ease;
+}
