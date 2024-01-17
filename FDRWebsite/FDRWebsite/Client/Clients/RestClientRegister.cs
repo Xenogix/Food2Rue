@@ -6,7 +6,8 @@ namespace FDRWebsite.Client.Clients
     {
         public static IServiceCollection AddRestClients(this IServiceCollection services, string baseUrl)
         {
-            services.AddRefitClient(typeof(IWeatherForecastClient)).ConfigureHttpClient(x => { x.BaseAddress = new Uri($"{baseUrl}api/weatherforecast"); });
+            services.AddRefitClient(typeof(IPublicationClient)).ConfigureHttpClient(x => { x.BaseAddress = new Uri($"{baseUrl}api/publication"); });
+            services.AddRefitClient(typeof(IUtilisateurClient)).ConfigureHttpClient(x => { x.BaseAddress = new Uri($"{baseUrl}api/user"); });
 
             return services;
         }

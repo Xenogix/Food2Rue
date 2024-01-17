@@ -6,13 +6,13 @@ namespace FDRWebsite.Shared.Models
     {
         public int ID { get; set; }
 
-        public required String Texte { get; set; }
-
-        public required DateOnly Date_Publication { get; set; }
-
         public int? Parent { get; set; }
 
-        public required int Utilisateur { get; set; }
+        public required string Texte { get; set; }
+
+        public required DateTime Date_Publication { get; set; }
+
+        public required int FK_Utilisateur { get; set; }
 
         public Video? Video { get; set; }
 

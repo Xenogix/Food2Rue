@@ -33,11 +33,18 @@ namespace FDRWebsite.Server.Repositories
 
         public async Task<IEnumerable<Publication>> GetAsync()
         {
-            return await connection.QueryAsync<Publication>(
-                $@"SELECT id, texte, date_publication, fk_parent, fk_utilisateur, fk_recette, fk_video FROM {TABLE_NAME}
-                LEFT JOIN media ON media.id = {TABLE_NAME}.id
-                INNER JOIN video ON video.id = media.id
-                ;");
+            return await connection.QueryAsync<Publication, Video, Publication>(
+                $@"SELECT * FROM {TABLE_NAME}
+                   LEFT JOIN media ON media.id = {TABLE_NAME}.id
+                   LEFT JOIN video ON video.id = media.id
+                   ;",
+                    (publication, video) =>
+                    {   
+                        publication.Video = video;
+                        return publication;
+                    },
+                    splitOn: "id, id" 
+                );
         }
 
 
@@ -56,7 +63,7 @@ namespace FDRWebsite.Server.Repositories
             return await connection.QueryAsync<Publication>(
                 $@"SELECT id, texte, date_publication, fk_parent, fk_utilisateur, fk_recette, fk_video FROM {TABLE_NAME}
                 LEFT JOIN media ON media.id = {TABLE_NAME}.id
-                INNER JOIN video ON video.id = media.id
+                LEFT JOIN video ON video.id = media.id
                 WHERE {modelFilter.GetFilterSQL}
                 ;");
         }
@@ -71,7 +78,7 @@ namespace FDRWebsite.Server.Repositories
                     Texte = model.Texte,
                     Date_Publication = model.Date_Publication,
                     Fk_Parent = model.Parent,
-                    Fk_Utilisateur = model.Utilisateur,
+                    Fk_Utilisateur = model.FK_Utilisateur,
                     Fk_Recette = model.Recette,
                     Fk_Video = model.Video.ID
                 });
@@ -87,7 +94,7 @@ namespace FDRWebsite.Server.Repositories
                 @$"UPDATE media SET url_source = @URL_Source WHERE id = @Id",
             new
             {
-                URL_Source = model.URL_Source,
+                //URL_Source = model.URL_Source,
                 Id = key
             });
 
@@ -113,7 +120,7 @@ namespace FDRWebsite.Server.Repositories
                     Texte = model.Texte,
                     Date_Publication = model.Date_Publication,
                     Fk_Parent = model.Parent,
-                    Fk_Utilisateur = model.Utilisateur,
+                    Fk_Utilisateur = model.FK_Utilisateur,
                     Fk_Recette = model.Recette,
                     Fk_Video = model.Video.ID,
                     Id = key

@@ -11,7 +11,9 @@ namespace FDRWebsite.Shared.Models
 
     public class Image : Media
     {
+
     }
+
     public class Video : Media
     {
     }
