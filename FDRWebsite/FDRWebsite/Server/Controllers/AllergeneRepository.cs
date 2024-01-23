@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace FDRWebsite.Server.Controllers
 {
-    public class AllergeneController : CRUDController<Allergene, int>
+    public class AllergeneController : CRUDController<Allergene, String>
     {
-        public AllergeneController(IRepositoryBase<Allergene, int> repository) : base(repository)
+        public AllergeneController(IRepositoryBase<Allergene, String> repository) : base(repository)
         {
         }
     }
