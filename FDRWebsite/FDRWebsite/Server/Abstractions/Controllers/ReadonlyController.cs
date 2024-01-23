@@ -7,12 +7,12 @@ namespace FDRWebsite.Server.Abstractions.Controllers
     [ApiController]
     [Route("api/[controller]")]
     public abstract class ReadonlyController<ModelType, KeyType> : ControllerBase
-    where ModelType : IIdentifiable<KeyType>
-    where KeyType : IEquatable<KeyType>
+        where ModelType : IIdentifiable<KeyType>
+        where KeyType : IEquatable<KeyType>
     {
-        private readonly IRepositoryBase<ModelType, KeyType> repository;
+        private readonly IReadonlyRepositoryBase<ModelType, KeyType> repository;
 
-        public ReadonlyController(IRepositoryBase<ModelType, KeyType> repository)
+        public ReadonlyController(IReadonlyRepositoryBase<ModelType, KeyType> repository)
         {
             this.repository = repository;
         }

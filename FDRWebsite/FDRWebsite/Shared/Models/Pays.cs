@@ -2,10 +2,11 @@
 
 namespace FDRWebsite.Shared.Models
 {
-    public class Pays : IIdentifiable<int>
+    public class Pays : IIdentifiable<string>
     {
-        public int ID { get; set; }
-        public required String Sigle { get; set; }
-        public required String Nom { get; set; }
+        public string ID => Sigle;
+        public required string Sigle { get; set; }
+        public required string Nom { get; set; }
+
     }
 }

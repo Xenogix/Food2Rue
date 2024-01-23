@@ -6,7 +6,7 @@ using Npgsql;
 
 namespace FDRWebsite.Server.Repositories
 {
-    public class PaysRepository : IReadonlyRepositoryBase<Pays, int>
+    public class PaysRepository : IReadonlyRepositoryBase<Pays, string>
     {
         private const string TABLE_NAME = "pays";
 
@@ -16,27 +16,24 @@ namespace FDRWebsite.Server.Repositories
         {
             this.connection = connection;
         }
+
         public async Task<IEnumerable<Pays>> GetAsync()
         {
             return await connection.QueryAsync<Pays>(
-                @$"SELECT id, sigle, nom FROM {TABLE_NAME};"
+                @$"SELECT sigle, nom FROM {TABLE_NAME};"
             );
         }
 
-        public async Task<Pays?> GetAsync(int key)
+        public async Task<Pays?> GetAsync(string key)
         {
-            IEnumerable<Pays> temps = (IEnumerable<Pays>)await GetAsync();
-            var U = temps.Where(temp => temp.ID == key).ToList();
-            if (U.Count == 0)
-                return null;
-            else
-                return U[0];
+            var parameters = new { key = key };
+            return await connection.QueryFirstAsync<Pays>(@$"SELECT sigle, nom FROM {TABLE_NAME} WHERE sigle = @key", parameters);
         }
 
         public async Task<IEnumerable<Pays>> GetAsync(IFilter<Pays> modelFilter)
         {
             return await connection.QueryAsync<Pays>(
-                @$"SELECT id, sigle, nom FROM {TABLE_NAME} WHERE {modelFilter.GetFilterSQL()};"
+                @$"SELECT sigle, nom FROM {TABLE_NAME} WHERE {modelFilter.GetFilterSQL()};"
             );
         }
 

@@ -4,8 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FDRWebsite.Shared.Models
 {
-    public class Allergene : IIdentifiable<String>
+    public class Allergene : IIdentifiable<string>
     {
-        public required String ID { get; set; }
+        public required string ID { get; set; }
     }
 }

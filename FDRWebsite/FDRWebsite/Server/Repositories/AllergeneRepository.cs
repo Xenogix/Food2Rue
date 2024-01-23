@@ -6,7 +6,7 @@ using Npgsql;
 
 namespace FDRWebsite.Server.Repositories
 {
-    public class AllergeneRepository : IRepositoryBase<Allergene, String>
+    public class AllergeneRepository : IRepositoryBase<Allergene, string>
     {
         private const string TABLE_NAME = "allergene";
 
@@ -17,7 +17,7 @@ namespace FDRWebsite.Server.Repositories
             this.connection = connection;
         }
 
-        public async Task<bool> DeleteAsync(String key)
+        public async Task<bool> DeleteAsync(string key)
         {
             var affectedRows = await connection.ExecuteAsync(
                 $"DELETE FROM {TABLE_NAME} WHERE nom = @Id",
@@ -37,7 +37,7 @@ namespace FDRWebsite.Server.Repositories
             );
         }
 
-        public async Task<Allergene?> GetAsync(String key)
+        public async Task<Allergene?> GetAsync(string key)
         {
             IEnumerable<Allergene> temps = await connection.QueryAsync<Allergene>(
                 @$"SELECT nom AS id FROM {TABLE_NAME} WHERE nom = @ID;",
@@ -54,16 +54,16 @@ namespace FDRWebsite.Server.Repositories
             );
         }
 
-        public async Task<String> InsertAsync(Allergene model)
+        public async Task<string> InsertAsync(Allergene model)
         {
-            return await connection.QueryFirstAsync<String>(
+            return await connection.QueryFirstAsync<string>(
             @$"INSERT INTO {TABLE_NAME} (nom) VALUES 
                 (@Nom) RETURNING nom;
                 ",
                 new { Nom = model.ID });
         }
 
-        public async Task<bool> UpdateAsync(String key, Allergene model)
+        public async Task<bool> UpdateAsync(string key, Allergene model)
         {
             if (!model.ID.Equals(0) && !key.Equals(model.ID))
             {
