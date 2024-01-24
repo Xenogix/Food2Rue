@@ -163,13 +163,13 @@ namespace FDRWebsite.Server.Repositories
 
                 if(model.Tags != null)
                 {
-                    PublicationTagRepository publicationTagRepository = new PublicationTagRepository(connection);
+                    var publicationTagRepository = new PublicationTagRepository(connection);
                     await publicationTagRepository.InsertAsync(new PublicationTag { ID = id, Tags = model.Tags }, transaction);
                 }
                 if (model.Images != null)
                 {
-                    PublicationImageRepository publicationImageRepository = new PublicationImageRepository(connection);
-                    await publicationImageRepository.InsertAsync(new PublicationImage { ID = id, Images = model.Images }, transaction);
+                    var objectImageRepository = new ObjectImageRepository(connection, "publication_image", "fk_publication");
+                    await objectImageRepository.InsertAsync(new ObjectImage { ID = id, Images = model.Images }, transaction);
                 }
 
                 if (id == 0)
@@ -196,7 +196,7 @@ namespace FDRWebsite.Server.Repositories
             ImageRepository imageRepository = new ImageRepository(connection);
             TagRepository tagRepository = new TagRepository(connection);
             PublicationTagRepository publicationTagRepository = new PublicationTagRepository(connection);
-            PublicationImageRepository publicationImageRepository = new PublicationImageRepository(connection);
+            var objectImageRepository = new ObjectImageRepository(connection, "publication_image", "fk_publication");
             IDbTransaction transaction = connection.BeginTransaction();
             try
             {
@@ -228,7 +228,7 @@ namespace FDRWebsite.Server.Repositories
                     throw new System.Exception("Error while updating publication tags");
                 }
 
-                if (!await publicationImageRepository.UpdateAsync(key, new PublicationImage { ID = key, Images = model.Images}, transaction))
+                if (!await objectImageRepository.UpdateAsync(key, new ObjectImage { ID = key, Images = model.Images}, transaction))
                 {
                     throw new System.Exception("Error while updating publication images");
                 }

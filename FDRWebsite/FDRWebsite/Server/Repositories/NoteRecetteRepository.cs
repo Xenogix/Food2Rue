@@ -2,11 +2,8 @@
 using FDRWebsite.Server.Abstractions.Repositories;
 using FDRWebsite.Shared.Abstraction;
 using FDRWebsite.Shared.Models;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Npgsql;
 using System.Data;
-using System.Data.Common;
-using System.Transactions;
 
 namespace FDRWebsite.Server.Repositories
 {
