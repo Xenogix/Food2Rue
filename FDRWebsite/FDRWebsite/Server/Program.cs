@@ -17,6 +17,7 @@ namespace FDRWebsite
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
             builder.Services.AddRepositories();
+            builder.Services.AddSwaggerGen();
 
             builder.Configuration.SetBasePath(AppDomain.CurrentDomain.BaseDirectory);
             builder.Configuration.AddJsonFile("appsettings.json");
@@ -35,6 +36,8 @@ namespace FDRWebsite
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
+                app.UseSwagger();
+                app.UseSwaggerUI();
                 app.UseWebAssemblyDebugging();
             }
             else

@@ -3,7 +3,6 @@ using FDRWebsite.Server.Abstractions.Repositories;
 using FDRWebsite.Shared.Abstraction;
 using FDRWebsite.Shared.Models;
 using Npgsql;
-using System.Data;
 
 namespace FDRWebsite.Server.Repositories
 {
@@ -21,11 +20,8 @@ namespace FDRWebsite.Server.Repositories
         public async Task<bool> DeleteAsync(int key)
         {
             var affectedRows = await connection.ExecuteAsync(
-                $"DELETE FROM {TABLE_NAME} WHERE id = @Id",
-                new
-                {
-                    Id = key,
-                }
+                $"DELETE FROM {TABLE_NAME} WHERE id = @ID",
+                new { ID = key }
             );
 
             return affectedRows > 0;
@@ -35,18 +31,17 @@ namespace FDRWebsite.Server.Repositories
         {
             return await connection.QueryAsync<Image>(
                 $@"SELECT {TABLE_NAME}.id, url_source FROM {TABLE_NAME}
-                INNER JOIN media ON media.id = {TABLE_NAME}.id
-                ;");
+                INNER JOIN media ON media.id = {TABLE_NAME}.id;");
         }
 
         public async Task<Image?> GetAsync(int key)
         {
-            IEnumerable<Image> temps = await GetAsync();
-            var U = temps.Where(temp => temp.ID == key).ToList();
-            if (U.Count == 0)
-                return null;
-            else
-                return U[0];
+            return await connection.QueryFirstAsync<Image>(
+                $@"SELECT {TABLE_NAME}.id, url_source FROM {TABLE_NAME}
+                INNER JOIN media ON media.id = {TABLE_NAME}.id;$
+                WHERE {TABLE_NAME}.id = @ID",
+                new { ID = key }
+            );
         }
 
         public async Task<IEnumerable<Image>> GetAsync(IFilter<Image> modelFilter)
@@ -54,42 +49,37 @@ namespace FDRWebsite.Server.Repositories
             return await connection.QueryAsync<Image>(
                 $@"SELECT {TABLE_NAME}.id, url_source FROM {TABLE_NAME}
                 INNER JOIN media ON media.id = {TABLE_NAME}.id
-                WHERE {modelFilter.GetFilterSQL}
-                ;");
+                WHERE {modelFilter.GetFilterSQL};",
+                modelFilter.GetFilterParameters()
+                );
         }
 
         public async Task<int> InsertAsync(Image model)
         {
-            var Transaction = connection.BeginTransaction();
-            int idmedia = await connection.QueryFirstAsync<int>(
-                @$"INSERT INTO media (url_source) VALUES 
-                (@URL_Source) RETURNING id",
-                new
-                {
-                    URL_Source = model.URL_Source
-                },
-                Transaction);
+            // Executed in a transaction as if only one of the insert works the database state could be inconsistent
+            using var transaction = connection.BeginTransaction();
+
+            int idMedia = await connection.QueryFirstAsync<int>(
+                @$"INSERT INTO media (url_source) VALUES (@URLSource) RETURNING id",
+                new { URLSource = model.URL_Source},
+                transaction);
+
             await connection.QueryFirstAsync<int>(
-                $@"INSERT INTO {TABLE_NAME} (id) VALUES ({idmedia}) RETURNING id",
-                new { },
-                Transaction);
-            Transaction.Commit();
-            return idmedia;
+                $@"INSERT INTO {TABLE_NAME} (id) VALUES (@ID) RETURNING id",
+                new { ID = @idMedia },
+                transaction);
+
+            transaction.Commit();
+
+            return idMedia;
         }
 
         public async Task<bool> UpdateAsync(int key, Image model)
         {
-            if (!model.ID.Equals(0) && key != model.ID)
-            {
-                return false;
-            }
             var row = await connection.ExecuteAsync(
-                @$"UPDATE media SET url_source = @URL_Source WHERE id = @Id",
-            new
-            {
-                URL_Source = model.URL_Source,
-                Id = key
-            });
+                @$"UPDATE media SET url_source = @URLSource, id = @NewID WHERE id = @ID",
+                new { URLSource = model.URL_Source, ID = key, NewID = model.ID }
+            );
 
             return row > 0;
         }
