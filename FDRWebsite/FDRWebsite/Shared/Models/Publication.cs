@@ -17,5 +17,11 @@ namespace FDRWebsite.Shared.Models
         public Video? Video { get; set; }
 
         public int? Recette { get; set; }
+
+        public int Aime { get; set; }
+
+        public IEnumerable<Tag>? Tags { get; set; }
+
+        public IEnumerable<Image>? Images { get; set; }
     }
 }

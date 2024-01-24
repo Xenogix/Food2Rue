@@ -2,9 +2,16 @@
 using FDRWebsite.Server.Abstractions.Repositories;
 using FDRWebsite.Shared.Abstraction;
 using FDRWebsite.Shared.Models;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.IdentityModel.Tokens;
 using Npgsql;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Transactions;
+using static Azure.Core.HttpHeader;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FDRWebsite.Server.Repositories
 {
@@ -34,97 +41,102 @@ namespace FDRWebsite.Server.Repositories
         
         public async Task<IEnumerable<Publication>> GetAsync()
         {
-            IEnumerable<Publication> Publications = await connection.QueryAsync<Publication, Video, Publication>(
-                $@"SELECT {TABLE_NAME}.id, {TABLE_NAME}.texte, {TABLE_NAME}.date_publication, {TABLE_NAME}.fk_parent, {TABLE_NAME}.fk_utilisateur, {TABLE_NAME}.fk_recette, COUNT(aime_publication_utilisateur.fk_utilisateur) AS aime, video.id, media.url_source FROM {TABLE_NAME}
-                LEFT JOIN media ON media.id = {TABLE_NAME}.id
-                LEFT JOIN video ON video.id = media.id
+            return await connection.QueryAsync<Publication, Video, string[], string[], Publication>(
+                $@"SELECT publication.id, publication.texte, publication.date_publication, publication.fk_parent, publication.fk_utilisateur, publication.fk_recette, COUNT(DISTINCT aime_publication_utilisateur.fk_utilisateur) AS aime, video.id, mediavid.url_source, 
+                array_agg(DISTINCT mediaim.id || ',' ||mediaim.url_source) AS images,
+                array_agg(DISTINCT tag.id || ',' ||tag.nom) AS tags 
+                FROM publication
+                LEFT JOIN media AS mediavid ON mediavid.id = publication.id
+                LEFT JOIN video ON video.id = mediavid.id
                 LEFT JOIN aime_publication_utilisateur ON aime_publication_utilisateur.fk_publication = publication.id
-                GROUP BY {TABLE_NAME}.id, {TABLE_NAME}.texte, {TABLE_NAME}.date_publication, {TABLE_NAME}.fk_parent, {TABLE_NAME}.fk_utilisateur, {TABLE_NAME}.fk_recette, media.id, media.url_source;",
-                (Publication, Video) =>
+                LEFT JOIN publication_image ON publication_image.fk_publication = publication.id
+                LEFT JOIN media AS mediaim ON mediaim.id = publication_image.fk_image
+                LEFT JOIN image ON mediaim.id = image.id
+                LEFT JOIN publication_tag ON publication_tag.fk_publication = publication.id
+                LEFT JOIN tag ON tag.id = publication_tag.fk_tag
+                GROUP BY publication.id, publication.texte, publication.date_publication, publication.fk_parent, publication.fk_utilisateur, publication.fk_recette, video.id, mediavid.url_source;",
+                (Publication, Video, images, tags) =>
                 {
                     Publication.Video = Video;
+                    Publication.Images = images[0].IsNullOrEmpty()?null:images.Select(x => x.Split(','))
+                                            .ToDictionary(x => int.Parse(x[0]), x => x[1])
+                                            .Select(p => new Image { ID = p.Key, URL_Source = p.Value });
+                    Publication.Tags = tags[0].IsNullOrEmpty() ? null : tags.Select(x => x.Split(','))
+                                            .ToDictionary(x => int.Parse(x[0]), x => x[1])
+                                            .Select(p => new Tag { ID = p.Key, Nom = p.Value });
                     return Publication;
                 },
-                splitOn: "id,id")
+                splitOn: "id,id,images,tags")
                 ;
-            foreach (Publication Publication in Publications)
-            {
-                Publication.Images = await connection.QueryAsync<Image>(
-                    $@"SELECT id, url_source FROM image
-                INNER JOIN media ON media.id = image.id
-                INNER JOIN publication_image ON publication_image.fk_image = image.id
-                INNER JOIN publication ON publication.id = publication_image.fk_publication
-                WHERE publication.id = @Id;",
-                    new
-                    {
-                        Id = Publication.ID
-                    });
-            }
-            return Publications;
+
         }
 
 
         public async Task<Publication?> GetAsync(int key)
         {
-            Publication Publication = (Publication)await connection.QueryAsync<Publication, Video, Publication>(
-                $@"SELECT {TABLE_NAME}.id, {TABLE_NAME}.texte, {TABLE_NAME}.date_publication, {TABLE_NAME}.fk_parent, {TABLE_NAME}.fk_utilisateur, {TABLE_NAME}.fk_recette, COUNT(aime_publication_utilisateur.fk_utilisateur) AS aime, video.id, media.url_source FROM {TABLE_NAME}
-                LEFT JOIN media ON media.id = {TABLE_NAME}.id
-                LEFT JOIN video ON video.id = media.id
+            IEnumerable<Publication> Publications = await connection.QueryAsync<Publication, Video, string[], string[], Publication>(
+                $@"SELECT publication.id, publication.texte, publication.date_publication, publication.fk_parent, publication.fk_utilisateur, publication.fk_recette, COUNT(DISTINCT aime_publication_utilisateur.fk_utilisateur) AS aime, video.id, mediavid.url_source, 
+                array_agg(DISTINCT mediaim.id || ',' ||mediaim.url_source) AS images,
+                array_agg(DISTINCT tag.id || ',' ||tag.nom) AS tags 
+                FROM publication
+                LEFT JOIN media AS mediavid ON mediavid.id = publication.id
+                LEFT JOIN video ON video.id = mediavid.id
                 LEFT JOIN aime_publication_utilisateur ON aime_publication_utilisateur.fk_publication = publication.id
-                WHERE {TABLE_NAME}.id = @Id
-                GROUP BY {TABLE_NAME}.id, {TABLE_NAME}.texte, {TABLE_NAME}.date_publication, {TABLE_NAME}.fk_parent, {TABLE_NAME}.fk_utilisateur, {TABLE_NAME}.fk_recette, media.id, media.url_source;",
-                (Publication, Video) =>
+                LEFT JOIN publication_image ON publication_image.fk_publication = publication.id
+                LEFT JOIN media AS mediaim ON mediaim.id = publication_image.fk_image
+                LEFT JOIN image ON mediaim.id = image.id
+                LEFT JOIN publication_tag ON publication_tag.fk_publication = publication.id
+                LEFT JOIN tag ON tag.id = publication_tag.fk_tag
+                WHERE publication.id = {key}
+                GROUP BY publication.id, publication.texte, publication.date_publication, publication.fk_parent, publication.fk_utilisateur, publication.fk_recette, video.id, mediavid.url_source
+                ;",
+                (Publication, Video, images, tags) =>
                 {
                     Publication.Video = Video;
+                    Publication.Images = images[0].IsNullOrEmpty() ? null : images.Select(x => x.Split(','))
+                                            .ToDictionary(x => int.Parse(x[0]), x => x[1])
+                                            .Select(p => new Image { ID = p.Key, URL_Source = p.Value });
+                    Publication.Tags = tags[0].IsNullOrEmpty() ? null : tags.Select(x => x.Split(','))
+                                            .ToDictionary(x => int.Parse(x[0]), x => x[1])
+                                            .Select(p => new Tag { ID = p.Key, Nom = p.Value });
                     return Publication;
                 },
-                splitOn: "id,id")
+                splitOn: "id,id,images,tags")
                 ;
-            Publication.Images = await connection.QueryAsync<Image>(
-                $@"SELECT id, url_source FROM image
-                INNER JOIN media ON media.id = image.id
-                INNER JOIN publication_image ON publication_image.fk_image = image.id
-                INNER JOIN publication ON publication.id = publication_image.fk_publication
-                WHERE publication.id = @Id;",
-                new
-                {
-                    Id = Publication.ID
-                });
-            return Publication;
+            return Publications.FirstOrDefault();
         }
 
         public async Task<IEnumerable<Publication>> GetAsync(IFilter<Publication> modelFilter)
         {
-            IEnumerable<Publication> Publications = await connection.QueryAsync<Publication, Video, Publication>(
-                $@"SELECT {TABLE_NAME}.id, {TABLE_NAME}.texte, {TABLE_NAME}.date_publication, {TABLE_NAME}.fk_parent, {TABLE_NAME}.fk_utilisateur, {TABLE_NAME}.fk_recette, COUNT(aime_publication_utilisateur.fk_utilisateur) AS aime, video.id, media.url_source FROM {TABLE_NAME}
-                LEFT JOIN media ON media.id = {TABLE_NAME}.id
-                LEFT JOIN video ON video.id = media.id
-<<<<<<< HEAD
+            IEnumerable<Publication> Publications = await connection.QueryAsync<Publication, Video, string[], string[], Publication>(
+                $@"SELECT publication.id, publication.texte, publication.date_publication, publication.fk_parent, publication.fk_utilisateur, publication.fk_recette, COUNT(DISTINCT aime_publication_utilisateur.fk_utilisateur) AS aime, video.id, mediavid.url_source, 
+                array_agg(DISTINCT mediaim.id || ',' || mediaim.url_source) AS images,
+                array_agg(DISTINCT tag.id || ',' ||tag.nom) AS tags 
+                FROM publication
+                LEFT JOIN media AS mediavid ON mediavid.id = publication.id
+                LEFT JOIN video ON video.id = mediavid.id
                 LEFT JOIN aime_publication_utilisateur ON aime_publication_utilisateur.fk_publication = publication.id
-=======
->>>>>>> 081310650bd9d49378540a2bda31e9d9f2a5bf94
-                WHERE {modelFilter.GetFilterSQL}
-                GROUP BY {TABLE_NAME}.id, {TABLE_NAME}.texte, {TABLE_NAME}.date_publication, {TABLE_NAME}.fk_parent, {TABLE_NAME}.fk_utilisateur, {TABLE_NAME}.fk_recette, media.id, media.url_source;",
-                (Publication, Video) =>
+                LEFT JOIN publication_image ON publication_image.fk_publication = publication.id
+                LEFT JOIN media AS mediaim ON mediaim.id = publication_image.fk_image
+                LEFT JOIN image ON mediaim.id = image.id
+                LEFT JOIN publication_tag ON publication_tag.fk_publication = publication.id
+                LEFT JOIN tag ON tag.id = publication_tag.fk_tag
+                WHERE {modelFilter.GetFilterSQL()}
+                GROUP BY publication.id, publication.texte, publication.date_publication, publication.fk_parent, publication.fk_utilisateur, publication.fk_recette, video.id, mediavid.url_source
+                ;",
+                (Publication, Video, images, tags) =>
                 {
                     Publication.Video = Video;
+                    Publication.Images = images[0].IsNullOrEmpty() ? null : images.Select(x => x.Split(','))
+                                            .ToDictionary(x => int.Parse(x[0]), x => x[1])
+                                            .Select(p => new Image { ID = p.Key, URL_Source = p.Value });
+                    Publication.Tags = tags[0].IsNullOrEmpty() ? null : tags.Select(x => x.Split(','))
+                                            .ToDictionary(x => int.Parse(x[0]), x => x[1])
+                                            .Select(p => new Tag { ID = p.Key, Nom = p.Value });
                     return Publication;
                 },
-                splitOn: "id,id")
+                splitOn: "id,id,images,tags")
                 ;
-            foreach (Publication Publication in Publications)
-            {
-                Publication.Images = await connection.QueryAsync<Image>(
-                    $@"SELECT id, url_source FROM image
-                INNER JOIN media ON media.id = image.id
-                INNER JOIN publication_image ON publication_image.fk_image = image.id
-                INNER JOIN publication ON publication.id = publication_image.fk_publication
-                WHERE publication.id = @Id;",
-                    new
-                    {
-                        Id = Publication.ID
-                    });
-            }
             return Publications;
         }
 
@@ -132,33 +144,47 @@ namespace FDRWebsite.Server.Repositories
         {
             ImageRepository imageRepository = new ImageRepository(connection);
             IDbTransaction transaction = connection.BeginTransaction();
-
-            int id = await connection.QueryFirstAsync<int>(
-                $@"INSERT INTO {TABLE_NAME} (texte, date_publication, fk_parent, fk_utilisateur, fk_recette, fk_video) VALUES 
-                (@Texte, @Date_Publication, @Fk_Parent, @Fk_Utilisateur, @Fk_Recette, @Fk_Video)",
-                new
-                {
-                    Texte = model.Texte,
-                    Date_Publication = model.Date_Publication,
-                    Fk_Parent = model.Parent,
-                    Fk_Utilisateur = model.FK_Utilisateur,
-                    Fk_Recette = model.Recette,
-                    Fk_Video = model.Video.ID
-                },
-                transaction);
-            string tempValues = "";
-            foreach (Image Image in model.Images)
+            try
             {
-                if(await imageRepository.InsertAsync(Image)!=0)
-                    tempValues = $"({id}, {Image.ID}),";
-            }
+                int? video = model.Video?.ID;
+                int id = await connection.QueryFirstAsync<int>(
+                    $@"INSERT INTO {TABLE_NAME} (texte, date_publication, fk_parent, fk_utilisateur, fk_recette, fk_video) VALUES 
+                    (@Texte, @Date_Publication, @Fk_Parent, @Fk_Utilisateur, @Fk_Recette, @Fk_Video) RETURNING id",
+                    new
+                    {
+                        Texte = model.Texte,
+                        Date_Publication = model.Date_Publication,
+                        Fk_Parent = model.Parent,
+                        Fk_Utilisateur = model.FK_Utilisateur,
+                        Fk_Recette = model.Recette,
+                        Fk_Video = video
+                    },
+                    transaction);
 
-            await connection.QueryFirstAsync<int>(
-                $@"INSERT INTO publication_image (fk_publication, fk_image) VALUES 
-                    @Values",
-                new { Values = tempValues },
-                transaction);
-            return id;
+                if(model.Tags != null)
+                {
+                    PublicationTagRepository publicationTagRepository = new PublicationTagRepository(connection);
+                    await publicationTagRepository.InsertAsync(new PublicationTag { ID = id, Tags = model.Tags }, transaction);
+                }
+                if (model.Images != null)
+                {
+                    PublicationImageRepository publicationImageRepository = new PublicationImageRepository(connection);
+                    await publicationImageRepository.InsertAsync(new PublicationImage { ID = id, Images = model.Images }, transaction);
+                }
+
+                if (id == 0)
+                {
+                    transaction.Rollback();
+                    return id;
+                }
+                transaction.Commit();
+                return id;
+            }
+            catch
+            {
+                transaction.Rollback();
+                return 0;
+            }
         }
 
         public async Task<bool> UpdateAsync(int key, Publication model)
@@ -167,42 +193,58 @@ namespace FDRWebsite.Server.Repositories
             {
                 return false;
             }
-            var row = await connection.ExecuteAsync(
-                @$"UPDATE media SET url_source = @URL_Source WHERE id = @Id",
-            new
+            ImageRepository imageRepository = new ImageRepository(connection);
+            TagRepository tagRepository = new TagRepository(connection);
+            PublicationTagRepository publicationTagRepository = new PublicationTagRepository(connection);
+            PublicationImageRepository publicationImageRepository = new PublicationImageRepository(connection);
+            IDbTransaction transaction = connection.BeginTransaction();
+            try
             {
-                //URL_Source = model.URL_Source,
-                Id = key
-            });
+                int? video = model.Video?.ID;
+                var row = await connection.ExecuteAsync(
+                    @$"UPDATE {TABLE_NAME} SET 
+                    texte = @Texte, 
+                    date_publication = @Date_Publication, 
+                    fk_parent = @Fk_Parent, 
+                    fk_utilisateur = @Fk_Utilisateur, 
+                    fk_recette = @Fk_Recette, 
+                    fk_video = @Fk_Video
+                    WHERE id = @Id",
+                    new
+                    {
+                        Texte = model.Texte,
+                        Date_Publication = model.Date_Publication,
+                        Fk_Parent = model.Parent,
+                        Fk_Utilisateur = model.FK_Utilisateur,
+                        Fk_Recette = model.Recette,
+                        Fk_Video = video,
+                        Id = key
+                    },
+                    transaction);
 
-            return row > 0;
-        }
-        public async Task<bool> UpdateAsync(int key, Publication model, Media mediaModel, Video videoModel)
-        {
-            if (!model.ID.Equals(0) && key != model.ID)
+
+                if (!await publicationTagRepository.UpdateAsync(key, new PublicationTag { ID = key, Tags = model.Tags }, transaction))
+                {
+                    throw new System.Exception("Error while updating publication tags");
+                }
+
+                if (!await publicationImageRepository.UpdateAsync(key, new PublicationImage { ID = key, Images = model.Images}, transaction))
+                {
+                    throw new System.Exception("Error while updating publication images");
+                }
+
+                if (row == 0)
+                    transaction.Rollback();
+                else
+                    transaction.Commit();
+
+                return row > 0;
+            }
+            catch
             {
+                transaction.Rollback();
                 return false;
             }
-            var row = await connection.ExecuteAsync(
-                @$"UPDATE {TABLE_NAME} SET 
-                texte = @Texte, 
-                date_publication = @Date_Publication, 
-                fk_parent = @Fk_Parent, 
-                fk_utilisateur = @Fk_Utilisateur, 
-                fk_recette = @Fk_Recette, 
-                fk_video = @Fk_Video
-                WHERE id = @Id",
-                new
-                {
-                    Texte = model.Texte,
-                    Date_Publication = model.Date_Publication,
-                    Fk_Parent = model.Parent,
-                    Fk_Utilisateur = model.FK_Utilisateur,
-                    Fk_Recette = model.Recette,
-                    Fk_Video = model.Video.ID,
-                    Id = key
-                });
-            return row > 0;
         }
 
 
