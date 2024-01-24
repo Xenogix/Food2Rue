@@ -1,0 +1,48 @@
+meta {
+  name: create
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:5253/api/publication
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+      "id": 0,
+      "parent": 5,
+      "texte": "géniale",
+      "date_Publication": "2022-12-11T00:00:00",
+      "fK_Utilisateur": 3,
+      "video": null,
+      "recette": null,
+      "aime": 0,
+      "tags": [
+        {
+          "id": 5,
+          "nom": "facile à faire"
+        },
+        {
+          "id": 6,
+          "nom": "rapide à faire"
+        },
+        {
+          "id": 7,
+          "nom": "anniversaire"
+        }
+      ],
+      "images": [
+        {
+          "id": 4,
+          "urL_Source": "./img/Couteau.png"
+        },
+        {
+          "id": 5,
+          "urL_Source": "./img/Assiette.png"
+        }
+      ]
+    }
+}
