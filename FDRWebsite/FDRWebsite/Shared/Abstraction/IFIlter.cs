@@ -3,5 +3,6 @@
     public interface IFilter<ModelType>
     {
         string GetFilterSQL();
+        Dictionary<string,object> GetFilterParameters();
     }
 }
