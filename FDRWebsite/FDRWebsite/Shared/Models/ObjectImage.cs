@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 
 namespace FDRWebsite.Shared.Models
 {
-    public class PublicationImage : IIdentifiable<int>
+    public class ObjectImage : IIdentifiable<int>
     {
         public required int ID { get; set; }
 
-        public required IEnumerable<Image> Images { get; set; }
+        public required IEnumerable<Image>? Images { get; set; }
     }
 }
+

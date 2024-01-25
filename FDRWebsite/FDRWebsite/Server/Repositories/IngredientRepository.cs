@@ -49,7 +49,7 @@ namespace FDRWebsite.Server.Repositories
 
                 ingredient.Image = image;
 
-                if(allergene.ID != null)
+                if(allergene?.ID != null)
                     ingredient.Allergenes.Add(allergene);
 
                 return ingredient;

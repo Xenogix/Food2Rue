@@ -1,49 +1,52 @@
-﻿using Azure;
-using Dapper;
+﻿using Dapper;
 using FDRWebsite.Server.Abstractions.Repositories;
 using FDRWebsite.Shared.Abstraction;
 using FDRWebsite.Shared.Models;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
-using System.Reflection;
-using System.Transactions;
 
 namespace FDRWebsite.Server.Repositories
 {
-    public class PublicationImageRepository : IRepositoryBase<PublicationImage, int>
+    public class ObjectImageRepository : IRepositoryBase<ObjectImage, int>
     {
-        private const string TABLE_NAME = "publication_image";
+        private string TABLE_NAME = "publication_image";
+        private string FK = "fk_publication";
 
         private readonly NpgsqlConnection connection;
 
-        public PublicationImageRepository(NpgsqlConnection connection)
+        public ObjectImageRepository(NpgsqlConnection connection)
         {
+            this.connection = connection;
+        }
+        public ObjectImageRepository(NpgsqlConnection connection, string table, string fk)
+        {
+            TABLE_NAME = table;
+            FK = fk;
             this.connection = connection;
         }
 
         public async Task<bool> DeleteAsync(int key)
         {
             var affectedRows = await connection.ExecuteAsync(
-                $"DELETE FROM {TABLE_NAME} WHERE fk_publication = @Id",
+                $"DELETE FROM {TABLE_NAME} WHERE @Champ = @Id",
                 new
                 {
+                    Champ = FK,
                     Id = key
                 }
             );
 
             return affectedRows > 0;
         }
-        public async Task<bool> DeleteAsync(int keyPublication, int keyImage, IDbTransaction transaction)
+        public async Task<bool> DeleteAsync(int key1, int keyImage, IDbTransaction transaction)
         {
             var affectedRows = await connection.ExecuteAsync(
-                $"DELETE FROM {TABLE_NAME} WHERE fk_publication = @IdPup AND fk_image = @IdImage",
+                $"DELETE FROM {TABLE_NAME} WHERE @Champ1 = @IdPup AND fk_image = @IdImage",
                 new
                 {
-                    IdPup = keyPublication,
+                    Champ1 = FK,
+                    Id1 = key1,
                     IdImage = keyImage
                 },
                 transaction
@@ -51,10 +54,10 @@ namespace FDRWebsite.Server.Repositories
 
             return affectedRows > 0;
         }
-        public async Task<bool> DeleteAsync(int keyPublication, int keyTag)
+        public async Task<bool> DeleteAsync(int key1, int keyImage)
         {
             IDbTransaction transaction = connection.BeginTransaction();
-            if (!await DeleteAsync(keyPublication, keyTag, transaction))
+            if (!await DeleteAsync(key1, keyImage, transaction))
             {
                 transaction.Rollback();
                 return false;
@@ -64,18 +67,18 @@ namespace FDRWebsite.Server.Repositories
             return true;
         }
 
-        public async Task<IEnumerable<PublicationImage>> GetAsync()
+        public async Task<IEnumerable<ObjectImage>> GetAsync()
         {
-            IEnumerable<PublicationImage> PublicationImages = await connection.QueryAsync<PublicationImage, string[], PublicationImage>(
-                $@"SELECT publication_image.fk_publication, 
+            IEnumerable<ObjectImage> ObjectImage = await connection.QueryAsync<ObjectImage, string[], ObjectImage>(
+                $@"SELECT {TABLE_NAME}.{FK}, 
                 array_agg(DISTINCT media.id || ',' || media.url_source) AS images 
                 FROM publication_image
                 INNER JOIN media ON media.id = publication_image.fk_image
                 INNER JOIN image ON image.id = media.id
-                GROUP BY publication_image.fk_publication;",
-                (PublicationImage, images) =>
+                GROUP BY {TABLE_NAME}.{FK};",
+                (ObjectImage, images) =>
                 {
-                    PublicationImage.Images = images.Select(image =>
+                    ObjectImage.Images = images.Select(image =>
                     {
                         string[] imageSplit = image.Split(',');
                         return new Image
@@ -84,25 +87,25 @@ namespace FDRWebsite.Server.Repositories
                             URL_Source = imageSplit[1]
                         };
                     });
-                    return PublicationImage;
+                    return ObjectImage;
                 },
                 splitOn: "images");
-            return PublicationImages;
+            return ObjectImage;
         }
 
-        public async Task<PublicationImage?> GetAsync(int key)
+        public async Task<ObjectImage?> GetAsync(int key)
         {
-            IEnumerable<PublicationImage> PublicationImages = await connection.QueryAsync<PublicationImage, string[], PublicationImage>(
-                $@"SELECT publication_image.fk_publication, 
+            IEnumerable<ObjectImage> ObjectImages = await connection.QueryAsync<ObjectImage, string[], ObjectImage>(
+                $@"SELECT {TABLE_NAME}.{FK}, 
                 array_agg(DISTINCT media.id || ',' || media.url_source) AS images 
                 FROM publication_image
                 INNER JOIN media ON media.id = publication_image.fk_image
                 INNER JOIN image ON image.id = media.id
-                WHERE publication_image.fk_publication = {key}
-                GROUP BY publication_image.fk_publication;",
-                (PublicationImage, images) =>
+                WHERE {TABLE_NAME}.{FK} = {key}
+                GROUP BY {TABLE_NAME}.{FK};",
+                (ObjectImage, images) =>
                 {
-                    PublicationImage.Images = images.Select(image =>
+                    ObjectImage.Images = images.Select(image =>
                     {
                         string[] imageSplit = image.Split(',');
                         return new Image
@@ -111,25 +114,25 @@ namespace FDRWebsite.Server.Repositories
                             URL_Source = imageSplit[1]
                         };
                     });
-                    return PublicationImage;
+                    return ObjectImage;
                 },
                 splitOn: "images");
-            return PublicationImages.FirstOrDefault();
+            return ObjectImages.FirstOrDefault();
         }
 
-        public async Task<IEnumerable<PublicationImage>> GetAsync(IFilter<PublicationImage> modelFilter)
+        public async Task<IEnumerable<ObjectImage>> GetAsync(IFilter<ObjectImage> modelFilter)
         {
-            IEnumerable<PublicationImage> PublicationImages = await connection.QueryAsync<PublicationImage, string[], PublicationImage>(
-                $@"SELECT publication_image.fk_publication, 
+            IEnumerable<ObjectImage> ObjectImages = await connection.QueryAsync<ObjectImage, string[], ObjectImage>(
+                $@"SELECT {TABLE_NAME}.{FK}.fk_publication, 
                 array_agg(DISTINCT media.id || ',' || media.url_source) AS images 
-                FROM publication_image
-                INNER JOIN media ON media.id = publication_image.fk_image
+                FROM {TABLE_NAME}.{FK}
+                INNER JOIN media ON media.id = {TABLE_NAME}.{FK}.fk_image
                 INNER JOIN image ON image.id = media.id
                 WHERE {modelFilter.GetFilterSQL()}
-                GROUP BY publication_image.fk_publication;",
-                (PublicationImage, images) =>
+                GROUP BY {TABLE_NAME}.{FK}.fk_publication;",
+                (ObjectImage, images) =>
                 {
-                    PublicationImage.Images = images.Select(image =>
+                    ObjectImage.Images = images.Select(image =>
                     {
                         string[] imageSplit = image.Split(',');
                         return new Image
@@ -138,17 +141,17 @@ namespace FDRWebsite.Server.Repositories
                             URL_Source = imageSplit[1]
                         };
                     });
-                    return PublicationImage;
+                    return ObjectImage;
                 },
                 splitOn: "images");
-            return PublicationImages;
+            return ObjectImages;
         }
 
-        public async Task<int> InsertAsync(PublicationImage model)
+        public async Task<int> InsertAsync(ObjectImage model)
         {
             IDbTransaction transaction = connection.BeginTransaction();
             int row = await InsertAsync(model, transaction);
-            if (row==0)
+            if (row == 0)
             {
                 transaction.Rollback();
                 return row;
@@ -157,7 +160,7 @@ namespace FDRWebsite.Server.Repositories
             transaction.Commit();
             return row;
         }
-        public async Task<int> InsertAsync(PublicationImage model, IDbTransaction transaction)
+        public async Task<int> InsertAsync(ObjectImage model, IDbTransaction transaction)
         {
             ImageRepository ImageRepository = new ImageRepository(connection);
             IEnumerable<Image> AllImage = await ImageRepository.GetAsync();
@@ -181,7 +184,7 @@ namespace FDRWebsite.Server.Repositories
             }
             if (!list.IsNullOrEmpty())
             {
-                string query = $"INSERT INTO publication_image (fk_publication, fk_image) VALUES {String.Join(',', list)};";
+                string query = $"INSERT INTO {TABLE_NAME} ({FK}, fk_image) VALUES {string.Join(',', list)};";
                 row += await connection.ExecuteAsync(query, transaction);
             }
 
@@ -189,7 +192,7 @@ namespace FDRWebsite.Server.Repositories
         }
 
 
-        public async Task<bool> UpdateAsync(int key, PublicationImage model)
+        public async Task<bool> UpdateAsync(int key, ObjectImage model)
         {
             IDbTransaction transaction = connection.BeginTransaction();
             bool b = await UpdateAsync(key, model, transaction);
@@ -203,7 +206,7 @@ namespace FDRWebsite.Server.Repositories
             return b;
         }
 
-        public async Task<bool> UpdateAsync(int key, PublicationImage model, IDbTransaction transaction)
+        public async Task<bool> UpdateAsync(int key, ObjectImage model, IDbTransaction transaction)
         {
             int row = await InsertAsync(model, transaction);
 
