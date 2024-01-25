@@ -1,9 +1,8 @@
 ﻿@page "/"
+@using FDRWebsite.Client.Clients;
+@using FDRWebsite.Shared.Models;
+@using FDRWebsite.Shared
 
-<PageTitle>Index</PageTitle>
-
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
-
-<SurveyPrompt Title="How is Blazor working for you?" />
+<div class="d-flex align-content-center">
+    <FDRWebsite.Client.Components.PostThread></FDRWebsite.Client.Components.PostThread>
+</div>

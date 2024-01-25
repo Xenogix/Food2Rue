@@ -1,27 +1,27 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">FDRWebsite</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</div>
-
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
+﻿<div class="d-flex flex-column justify-content-center h-100 px-5 py-3">
+    <nav class="flex-column justify-content-center bg-dark rounded-pill" style="width: 3rem; overflow:visible">
+        <div class="nav-item py-2">
+            <NavLink class="nav-link d-inline-flex" href="" Match="NavLinkMatch.All">
+                <i class="fa-solid fa-house my-auto" style="width: 2.5rem;"></i>
+                <p class="my-0">Home</p>
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
+        <div class="nav-item py-2">
+            <NavLink class="nav-link d-inline-flex" href="counter">
+                <i class="fa-solid fa-address-card my-auto" style="width: 2.5rem;"></i>
+                <p class="my-0">Profile</p>
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
+        <div class="nav-item py-2">
+            <NavLink class="nav-link d-inline-flex" href="fetchdata">
+                <i class="fa-solid fa-square-plus my-auto" style="width: 2.5rem;"></i>
+                <p class="my-0">Post</p>
+            </NavLink>
+        </div>
+        <div class="nav-item py-2">
+            <NavLink class="nav-link d-inline-flex" href="fetchdata">
+                <i class="fa-solid fa-key my-auto" style="width: 2.5rem;"></i>
+                <p class="my-0">Login</p>
             </NavLink>
         </div>
     </nav>
