@@ -1,7 +1,13 @@
-.nav-item {
-    
+.nav-text {
+    overflow: hidden;
 }
 
-.nav-text {
-    margin: 0 0 0 1rem;
+.nav-text > p {
+    margin: 0 0 0 -100%!important;
+    transition-property: margin-left;
+    transition-duration: 0.2s;
+}
+
+.nav-link:hover > .nav-text > p {
+    margin-left: 0.5rem!important;
 }
