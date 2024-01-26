@@ -1,16 +1,22 @@
-.page {
-    position: relative;
-    display: flex;
-    flex-direction: column;
+body {
+    height: 100%;
 }
 
-main {
+.page {
+    display: flex;
+    justify-content: center;
+}
+
+.main {
+    height: 100vh;
+    max-width: 1920px;
     flex: 1;
 }
 
-.page {
-    flex-direction: row;
+.content {
+    height: 100%;
 }
+
 
 .sidebar {
     height: 100vh;

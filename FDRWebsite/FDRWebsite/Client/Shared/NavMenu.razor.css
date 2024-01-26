@@ -2,8 +2,15 @@
     overflow: hidden;
 }
 
+.nav-background {
+    background: #F7F7F7;
+    border-style: solid;
+    border-color: #D4D4D4;
+    border-width: 2px;
+}
+
 .nav-text > p {
-    margin: 0 0 0 -100%!important;
+    margin: 0 0 0 -100% !important;
     transition-property: margin-left;
     transition-duration: 0.2s;
 }
