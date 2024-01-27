@@ -126,7 +126,7 @@ CREATE TABLE  aime_publication_utilisateur (
 
 CREATE TABLE  note (
   fk_utilisateur INT,
-  fk_publication INT,
+  fk_recette INT,
   note INT NOT NULL,
   PRIMARY KEY (fk_utilisateur, fk_publication),
   FOREIGN KEY (fk_utilisateur) REFERENCES utilisateur(id) ON DELETE CASCADE ON UPDATE CASCADE,

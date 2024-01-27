@@ -5,6 +5,7 @@ using FDRWebsite.Shared.Abstraction;
 using FDRWebsite.Shared.Models;
 using Npgsql;
 using System.Data;
+using System.Transactions;
 
 namespace FDRWebsite.Server.Repositories
 {
@@ -58,10 +59,8 @@ namespace FDRWebsite.Server.Repositories
                 WHERE {filter.GetFilterSQL}
                 ;");
         }
-
-        public async Task<int> InsertAsync(Video model)
+        public async Task<int> InsertAsync(Video model, IDbTransaction Transaction)
         {
-            var Transaction = connection.BeginTransaction();
             int idmedia = await connection.QueryFirstAsync<int>(
                 @$"INSERT INTO media (url_source) VALUES 
                 (@URL_Source) RETURNING id",
@@ -71,11 +70,22 @@ namespace FDRWebsite.Server.Repositories
                 },
                 Transaction);
             await connection.QueryFirstAsync<int>(
-                $@"INSERT INTO {TABLE_NAME} (id) VALUES ({idmedia}) RETURNING id",
-                new { },
+                $@"INSERT INTO {TABLE_NAME} (id) VALUES (@Idmedia) RETURNING id",
+                new { Idmedia = idmedia},
                 Transaction);
-            Transaction.Commit();
             return idmedia;
+        }
+        public async Task<int> InsertAsync(Video model)
+        {
+            var Transaction = connection.BeginTransaction();
+            int idmedia = await InsertAsync(model, Transaction);
+            if (idmedia != -1)
+            {
+                Transaction.Commit();
+                return idmedia;
+            }
+            Transaction.Rollback();
+            return -1;
         }
 
         public async Task<bool> UpdateAsync(int key, Video model)
