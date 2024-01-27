@@ -13,6 +13,8 @@ namespace FDRWebsite.Client.Authentication
         public LocalAuthenticationStateProvider(AuthenticationService authenticationService)
         {
             this.authenticationService = authenticationService;
+            this.authenticationService.OnLogin += UpdateAuthenticationState;
+            this.authenticationService.OnLogout += UpdateAuthenticationState;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -38,5 +40,9 @@ namespace FDRWebsite.Client.Authentication
             return defaultState;
         }
 
+        private void UpdateAuthenticationState()
+        {
+            NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+        }
     }
 }

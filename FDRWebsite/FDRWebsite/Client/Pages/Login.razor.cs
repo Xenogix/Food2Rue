@@ -8,14 +8,23 @@ namespace FDRWebsite.Client.Pages
         [Inject]
         public required AuthenticationService AuthenticationService { get; set; }
 
+        [Inject]
+        public required NavigationManager NavigationManager { get; set; }
+
         private string? email;
         private string? password;
+        private bool loginHasFailed;
 
         private async void SignInAsync()
         {
             if (email == null || password == null) return;
 
-            await AuthenticationService.LoginAsync(email, password);
+            loginHasFailed = !(await AuthenticationService.LoginAsync(email, password));
+
+            if(!loginHasFailed)
+                NavigationManager.NavigateTo("/");
+            else
+                StateHasChanged();
         }
     }
 }

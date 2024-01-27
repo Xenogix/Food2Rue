@@ -1,7 +1,6 @@
 ﻿using Blazored.LocalStorage;
 using FDRWebsite.Client.Clients;
 using FDRWebsite.Shared.Models;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace FDRWebsite.Client.Authentication
 {
@@ -13,11 +12,16 @@ namespace FDRWebsite.Client.Authentication
 
         private const string STORAGE_KEY = "authToken";
 
+        public delegate void AuthenticationEventHandler();
+
+        public event AuthenticationEventHandler? OnLogin;
+
+        public event AuthenticationEventHandler? OnLogout;
+
         public AuthenticationService(IAuthenticationClient authenticationClient, ILocalStorageService localStorage)
         {
             this.authenticationClient = authenticationClient;
             this.localStorage = localStorage;
-
         }
 
         public async Task<bool> LoginAsync(string email, string password)
@@ -28,12 +32,15 @@ namespace FDRWebsite.Client.Authentication
             if (response.Token == null) return false;
 
             await StoreTokenAsync(response.Token);
+            OnLogin?.Invoke();
+
             return true;
         }
 
         public async Task LogoutAsync()
         {
             await ClearTokenAsync();
+            OnLogout?.Invoke();
         }
 
         public async Task<string?> GetTokenAsync()

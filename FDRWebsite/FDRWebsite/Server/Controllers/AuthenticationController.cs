@@ -24,7 +24,7 @@ namespace FDRWebsite.Server.Controllers
         public async Task<AuthenticationResponse?> AuthenticateAsync([FromBody] LoginRequest model)
         {
             var claims = await provider.GetUserClaims(model?.Email, model?.Password);
-            if (claims == null) return null;
+            if (claims == null) return new AuthenticationResponse();
 
             // Generate JWT token
             var token = new JwtSecurityToken(
