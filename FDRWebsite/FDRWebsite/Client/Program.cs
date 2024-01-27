@@ -1,8 +1,10 @@
+using Blazored.LocalStorage;
 using FDRWebsite.Client.Authentication;
 using FDRWebsite.Client.Clients;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.IdentityModel.Logging;
 
 namespace FDRWebsite.Client
 {
@@ -16,18 +18,10 @@ namespace FDRWebsite.Client
 
             builder.Services.AddAuthorizationCore();
             builder.Services.AddScoped<AuthenticationStateProvider, LocalAuthenticationStateProvider>();
+            builder.Services.AddScoped<AuthenticationService>();
+            builder.Services.AddBlazoredLocalStorage();
 
-            // Adding Microsoft Identity authentication
-            builder.Services.AddMsalAuthentication(azureOptions => {
-                builder.Configuration.Bind("AzureAd", azureOptions.ProviderOptions.Authentication);
-            });
-
-            // Adding Google OAuth2 authentication
-            /*
-            builder.Services.AddMsalAuthentication(googleOptions => {
-                builder.Configuration.Bind("GoogleAuth", googleOptions.ProviderOptions.Authentication);
-            });
-            */
+            IdentityModelEventSource.ShowPII = true;
 
             builder.Services.AddRestClients(builder.HostEnvironment.BaseAddress);
 

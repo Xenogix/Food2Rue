@@ -1,0 +1,25 @@
+﻿@page "/login"
+
+<div class="card w-100" style="max-width: 32rem;">
+    <div class="card-body">
+        <h3 class="card-title">Sign into you account</h3>
+
+        <!-- Email input -->
+        <div class="form-outline mb-4">
+            <input type="email" id="emailField" class="form-control" @bind-value="email" />
+            <label class="form-label" for="emailField">Email address</label>
+        </div>
+
+        <!-- Password input -->
+        <div class="form-outline mb-4">
+            <input type="password" id="passwordField" class="form-control" @bind-value="password" />
+            <label class="form-label" for="passwordField">Password</label>
+        </div>
+
+        <button type="button" class="btn btn-primary btn-block mb-4" @onclick="SignInAsync">Sign in</button>
+
+        <div class="text-center">
+            <p>Not a member? <a href="#!">Register</a></p>
+        </div>
+    </div>
+</div>
