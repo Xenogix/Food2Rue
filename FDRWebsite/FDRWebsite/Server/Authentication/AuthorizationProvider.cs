@@ -1,5 +1,4 @@
 ﻿using FDRWebsite.Server.Abstractions.Repositories;
-using FDRWebsite.Server.Repositories;
 using FDRWebsite.Server.Repositories.Filters;
 using FDRWebsite.Shared.Models;
 using System.Security.Claims;
@@ -26,6 +25,7 @@ namespace FDRWebsite.Server.Authentication
                 new Claim(ClaimTypes.Name, user.Pseudo),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Role, "User"),
+                new Claim(UserClaimTypes.ID, user.ID.ToString())
             };
         }
 

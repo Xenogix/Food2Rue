@@ -1,59 +1,18 @@
 ﻿<div class="d-flex flex-column justify-content-center h-100 px-5 py-3">
-    <nav class="nav-background flex-column justify-content-center rounded-pill" style="width: 3rem; overflow:visible">
-        <div class="nav-item py-2">
-            <NavLink class="nav-link d-inline-flex" href="" Match="NavLinkMatch.All">
-                <i class="fa-solid fa-house my-auto me-3" style="width: 1rem"></i>
-                <div class="nav-text">
-                    <p class="my-0 ms-2">Home</p>
-                </div>
-            </NavLink>
-        </div>
-        <div class="nav-item py-2">
-            <NavLink class="nav-link d-inline-flex" href="profile" Match="NavLinkMatch.All">
-                <i class="fa-solid fa-address-card my-auto me-3" style="width: 1rem"></i>
-                <div class="nav-text">
-                    <p class="my-0 ms-2">Profile</p>
-                </div>
-            </NavLink>
-        </div>
-        <div class="nav-item py-2">
-            <NavLink class="nav-link d-inline-flex" href="post" Match="NavLinkMatch.All">
-                <i class="fa-solid fa-square-plus my-auto me-3" style="width: 1rem"></i>
-                <div class="nav-text">
-                    <p class="my-0 ms-2">Post</p>
-                </div>
-            </NavLink>
-        </div>
-        <div class="nav-item py-2">
-            <AuthorizeView>
-                <Authorized>
-                    <NavLink class="nav-link d-inline-flex" href="logout" Match="NavLinkMatch.All">
-                        <i class="fa-solid fa-key my-auto me-3" style="width: 1rem"></i>
-                        <div class="nav-text">
-                            <p class="my-0 ms-2">Logout</p>
-                        </div>
-                    </NavLink>
-                </Authorized>
-                <NotAuthorized>
-                    <NavLink class="nav-link d-inline-flex" href="login" Match="NavLinkMatch.All">
-                        <i class="fa-solid fa-key my-auto me-3" style="width: 1rem"></i>
-                        <div class="nav-text">
-                            <p class="my-0 ms-2">Login</p>
-                        </div>
-                    </NavLink>
-                </NotAuthorized>
-            </AuthorizeView>
-        </div>
+    <nav class="nav-background d-flex flex-column justify-content-between rounded-pill" style="width: 3rem; min-height:12rem; overflow:visible">
+
+        @foreach (var entry in navigationEntries)
+        {
+            <div class="nav-item py-2">
+                <NavLink class="nav-link d-inline-flex" href="@entry.Url" Match="NavLinkMatch.All">
+                    <i class="fa-solid @entry.Icon my-auto me-3" style="width: 1rem"></i>
+                    <div class="nav-text">
+                        <p class="my-0 ms-2">@entry.Title</p>
+                    </div>
+                </NavLink>
+            </div>
+        }
     </nav>
 </div>
 
-@code {
-    private bool collapseNavMenu = true;
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
-}
