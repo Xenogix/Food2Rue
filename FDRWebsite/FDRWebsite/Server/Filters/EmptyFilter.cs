@@ -2,7 +2,7 @@
 
 namespace FDRWebsite.Server.Filters
 {
-    public class EmptyFilter : IFilter<EmptyFilter>
+    public class EmptyFilter : IFilter<EmptyFilterParameters>
     {
         public Dictionary<string, object> GetFilterParameters()
         {
@@ -14,12 +14,12 @@ namespace FDRWebsite.Server.Filters
             return " TRUE";
         }
 
-        public EmptyFilter? GetParameters()
+        public EmptyFilterParameters? GetParameters()
         {
             return null;
         }
 
-        public void SetParameters(EmptyFilter parameters)
+        public void SetParameters(EmptyFilterParameters parameters)
         {
             // Do nothing
         }
