@@ -4,7 +4,10 @@
     <div class="d-flex w-100 mb-3 gap-3">
         <img class="rounded-circle" style="height:3rem" src="@user?.Photo_Profil?.URL_Source" />
         <div class="d-flex flex-column justify-content-center">
-            <p class="m-0">@(user?.Nom ?? string.Empty)</p>
+            <p class="m-0">@(user?.Pseudo ?? string.Empty)</p>
+        </div>
+        <div class="d-flex flex-column justify-content-center">
+            <p class="m-0">@(Post.Date_Publication.ToString("yyyy-MM-dd HH:mm") ?? string.Empty)</p>
         </div>
     </div>
 
@@ -20,11 +23,11 @@
         <div class="d-flex position-relative mx-4 interaction-box overflow-hidden">
             <div class="interaction-button" role="button" @onclick="OnLikeClick">
                 <i class="fa-solid fa-heart"></i>
-                <p>928</p>
+                <p>@Post.Aime</p>
             </div>
             <div class="interaction-button" role="button" @onclick="OnCommentClick">
                 <i class="fa-solid fa-message"></i>
-                <p>120</p>
+                <p>@Post.Commentaires</p>
             </div>
         </div>
 

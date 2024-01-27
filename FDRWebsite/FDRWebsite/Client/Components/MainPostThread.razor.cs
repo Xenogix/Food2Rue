@@ -1,5 +1,6 @@
 using FDRWebsite.Client.Clients;
 using FDRWebsite.Shared.Models;
+using FDRWebsite.Shared.Models.Filters;
 using Microsoft.AspNetCore.Components;
 
 namespace FDRWebsite.Client.Components
@@ -22,7 +23,8 @@ namespace FDRWebsite.Client.Components
 
         private async Task LoadPostsAsync()
         {
-            PostsToLoad = await PublicationClient.GetAsync();
+            var filter = new PublicationParameters() { IncludeComments = false };
+            PostsToLoad = await PublicationClient.PostAsync(filter);
         }
 
         private async Task RefreshPostsAsync()

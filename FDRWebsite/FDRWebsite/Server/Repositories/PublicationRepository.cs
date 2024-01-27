@@ -43,13 +43,14 @@ namespace FDRWebsite.Server.Repositories
         public async Task<IEnumerable<Publication>> GetAsync()
         {
             return await connection.QueryAsync<Publication, Video, string[], string[], Publication>(
-                $@"SELECT publication.id, publication.texte, publication.date_publication, publication.fk_parent, publication.fk_utilisateur, publication.fk_recette, COUNT(DISTINCT aime_publication_utilisateur.fk_utilisateur) AS aime, video.id, mediavid.url_source, 
+                $@"SELECT publication.id, publication.texte, publication.date_publication, publication.fk_parent, publication.fk_utilisateur, publication.fk_recette, COUNT(DISTINCT aime_publication_utilisateur.fk_utilisateur) AS aime, COUNT(DISTINCT publication_parent.id) AS commentaires, video.id, mediavid.url_source, 
                 array_agg(DISTINCT mediaim.id || ',' ||mediaim.url_source) AS images,
                 array_agg(DISTINCT tag.id || ',' ||tag.nom) AS tags 
                 FROM publication
                 LEFT JOIN media AS mediavid ON mediavid.id = publication.id
                 LEFT JOIN video ON video.id = mediavid.id
                 LEFT JOIN aime_publication_utilisateur ON aime_publication_utilisateur.fk_publication = publication.id
+                LEFT JOIN publication AS publication_parent ON publication_parent.fk_parent = publication.id
                 LEFT JOIN publication_image ON publication_image.fk_publication = publication.id
                 LEFT JOIN media AS mediaim ON mediaim.id = publication_image.fk_image
                 LEFT JOIN image ON mediaim.id = image.id
@@ -76,13 +77,14 @@ namespace FDRWebsite.Server.Repositories
         public async Task<Publication?> GetAsync(int key)
         {
             IEnumerable<Publication> Publications = await connection.QueryAsync<Publication, Video, string[], string[], Publication>(
-                $@"SELECT publication.id, publication.texte, publication.date_publication, publication.fk_parent, publication.fk_utilisateur, publication.fk_recette, COUNT(DISTINCT aime_publication_utilisateur.fk_utilisateur) AS aime, video.id, mediavid.url_source, 
+                $@"SELECT publication.id, publication.texte, publication.date_publication, publication.fk_parent, publication.fk_utilisateur, publication.fk_recette, COUNT(DISTINCT aime_publication_utilisateur.fk_utilisateur) AS aime, COUNT(DISTINCT publication_parent.id) AS commentaires, video.id, mediavid.url_source, 
                 array_agg(DISTINCT mediaim.id || ',' ||mediaim.url_source) AS images,
                 array_agg(DISTINCT tag.id || ',' ||tag.nom) AS tags 
                 FROM publication
                 LEFT JOIN media AS mediavid ON mediavid.id = publication.id
                 LEFT JOIN video ON video.id = mediavid.id
                 LEFT JOIN aime_publication_utilisateur ON aime_publication_utilisateur.fk_publication = publication.id
+                LEFT JOIN publication AS publication_parent ON publication_parent.fk_parent = publication.id
                 LEFT JOIN publication_image ON publication_image.fk_publication = publication.id
                 LEFT JOIN media AS mediaim ON mediaim.id = publication_image.fk_image
                 LEFT JOIN image ON mediaim.id = image.id
@@ -109,30 +111,15 @@ namespace FDRWebsite.Server.Repositories
 
         public async Task<IEnumerable<Publication>> GetAsync(IFilter filter)
         {
-            var test = $@"SELECT publication.id, publication.texte, publication.date_publication, publication.fk_parent, publication.fk_utilisateur, publication.fk_recette, COUNT(DISTINCT aime_publication_utilisateur.fk_utilisateur) AS aime, video.id, mediavid.url_source, 
-                array_agg(DISTINCT mediaim.id || ',' || mediaim.url_source) AS images,
-                array_agg(DISTINCT tag.id || ',' ||tag.nom) AS tags 
-                FROM publication
-                LEFT JOIN media AS mediavid ON mediavid.id = publication.id
-                LEFT JOIN video ON video.id = mediavid.id
-                LEFT JOIN aime_publication_utilisateur ON aime_publication_utilisateur.fk_publication = publication.id
-                LEFT JOIN publication_image ON publication_image.fk_publication = publication.id
-                LEFT JOIN media AS mediaim ON mediaim.id = publication_image.fk_image
-                LEFT JOIN image ON mediaim.id = image.id
-                LEFT JOIN publication_tag ON publication_tag.fk_publication = publication.id
-                LEFT JOIN tag ON tag.id = publication_tag.fk_tag
-                WHERE {filter.GetFilterSQL()}
-                GROUP BY publication.id, publication.texte, publication.date_publication, publication.fk_parent, publication.fk_utilisateur, publication.fk_recette, video.id, mediavid.url_source
-                ;";
-
             IEnumerable<Publication> Publications = await connection.QueryAsync<Publication, Video, string[], string[], Publication>(
-                $@"SELECT publication.id, publication.texte, publication.date_publication, publication.fk_parent, publication.fk_utilisateur, publication.fk_recette, COUNT(DISTINCT aime_publication_utilisateur.fk_utilisateur) AS aime, video.id, mediavid.url_source, 
-                array_agg(DISTINCT mediaim.id || ',' || mediaim.url_source) AS images,
+                $@"SELECT publication.id, publication.texte, publication.date_publication, publication.fk_parent, publication.fk_utilisateur, publication.fk_recette, COUNT(DISTINCT aime_publication_utilisateur.fk_utilisateur) AS aime, COUNT(DISTINCT publication_parent.id) AS commentaires, video.id, mediavid.url_source, 
+                array_agg(DISTINCT mediaim.id || ',' ||mediaim.url_source) AS images,
                 array_agg(DISTINCT tag.id || ',' ||tag.nom) AS tags 
                 FROM publication
                 LEFT JOIN media AS mediavid ON mediavid.id = publication.id
                 LEFT JOIN video ON video.id = mediavid.id
                 LEFT JOIN aime_publication_utilisateur ON aime_publication_utilisateur.fk_publication = publication.id
+                LEFT JOIN publication AS publication_parent ON publication_parent.fk_parent = publication.id
                 LEFT JOIN publication_image ON publication_image.fk_publication = publication.id
                 LEFT JOIN media AS mediaim ON mediaim.id = publication_image.fk_image
                 LEFT JOIN image ON mediaim.id = image.id

@@ -59,6 +59,11 @@ namespace FDRWebsite.Server.Repositories
 
         public async Task<IEnumerable<Utilisateur>> GetAsync(IFilter filter)
         {
+            var a = $@"SELECT {TABLE_NAME}.id, {TABLE_NAME}.nom, {TABLE_NAME}.prénom, {TABLE_NAME}.email, {TABLE_NAME}.pseudo, {TABLE_NAME}.password, {TABLE_NAME}.date_naissance, {TABLE_NAME}.date_creation_profil, {TABLE_NAME}.description, media.id, media.url_source, pays.id, pays.sigle, pays.nom FROM {TABLE_NAME} 
+                LEFT JOIN media ON {TABLE_NAME}.fk_photo_profil = media.id
+                LEFT JOIN pays ON {TABLE_NAME}.fk_pays = pays.id 
+                WHERE {filter.GetFilterSQL()};";
+
             return await connection.QueryAsync<Utilisateur, Image, Pays, Utilisateur>(
                 $@"SELECT {TABLE_NAME}.id, {TABLE_NAME}.nom, {TABLE_NAME}.prénom, {TABLE_NAME}.email, {TABLE_NAME}.pseudo, {TABLE_NAME}.password, {TABLE_NAME}.date_naissance, {TABLE_NAME}.date_creation_profil, {TABLE_NAME}.description, media.id, media.url_source, pays.id, pays.sigle, pays.nom FROM {TABLE_NAME} 
                 LEFT JOIN media ON {TABLE_NAME}.fk_photo_profil = media.id

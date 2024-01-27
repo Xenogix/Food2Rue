@@ -1,6 +1,4 @@
 ﻿using FDRWebsite.Server.Abstractions.Filters;
-using FDRWebsite.Shared.Abstraction;
-using FDRWebsite.Shared.Models;
 using FDRWebsite.Shared.Models.Filters;
 using System.Text;
 
@@ -26,7 +24,7 @@ namespace FDRWebsite.Server.Filters
             if (Parameters == null) return string.Empty;
 
             if (Parameters.UserIDs != null) result.Append($"AND publication.fk_utilisateur IN ({string.Join(",", Parameters.UserIDs)}) ");
-            if (!Parameters.IncludeComments) result.Append($"AND publication.fk_parent <> NULL ");
+            if (!Parameters.IncludeComments) result.Append($"AND publication.fk_parent IS NULL");
 
             return result.ToString();
         }

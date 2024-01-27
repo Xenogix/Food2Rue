@@ -20,6 +20,8 @@ namespace FDRWebsite.Shared.Models
 
         public int Aime { get; set; }
 
+        public int Commentaires { get; set; }
+
         public IEnumerable<Tag>? Tags { get; set; }
 
         public IEnumerable<Image>? Images { get; set; }

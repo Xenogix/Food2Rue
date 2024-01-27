@@ -61,7 +61,14 @@
 
         <div class="row my-5">
             <div class="col text-center">
-                <PostThread Posts="UserPosts"/>
+                @if (UserPosts == null || !UserPosts.Any())
+                {
+                    <h3 class="mt-5">The user has no posts</h3>
+                }
+                else
+                {
+                    <PostThread Posts="UserPosts" />
+                }
             </div>
         </div>
     }
