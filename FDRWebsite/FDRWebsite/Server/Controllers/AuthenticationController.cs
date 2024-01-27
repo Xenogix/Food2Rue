@@ -1,10 +1,8 @@
 ﻿using FDRWebsite.Server.Authentication;
-using FDRWebsite.Server.Repositories;
 using FDRWebsite.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
 
 namespace FDRWebsite.Server.Controllers
@@ -23,11 +21,10 @@ namespace FDRWebsite.Server.Controllers
         }
 
         [HttpPost]
-        [Route("authenticate")]
-        public async Task<IActionResult> AuthenticateAsync([FromBody] LoginRequest model)
+        public async Task<AuthenticationResponse?> AuthenticateAsync([FromBody] LoginRequest model)
         {
             var claims = await provider.GetUserClaims(model?.Email, model?.Password);
-            if(claims == null) return Unauthorized();
+            if (claims == null) return new AuthenticationResponse();
 
             // Generate JWT token
             var token = new JwtSecurityToken(
@@ -40,11 +37,10 @@ namespace FDRWebsite.Server.Controllers
                     SecurityAlgorithms.HmacSha256)
             );
 
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
             // Return token
-            return Ok(new
-            {
-                token = new JwtSecurityTokenHandler().WriteToken(token)
-            });
+            return new AuthenticationResponse() { Token = tokenString };
         }
     }
 }

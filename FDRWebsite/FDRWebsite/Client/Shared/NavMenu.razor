@@ -9,7 +9,7 @@
             </NavLink>
         </div>
         <div class="nav-item py-2">
-            <NavLink class="nav-link d-inline-flex" href="counter">
+            <NavLink class="nav-link d-inline-flex" href="profile" Match="NavLinkMatch.All">
                 <i class="fa-solid fa-address-card my-auto me-3" style="width: 1rem"></i>
                 <div class="nav-text">
                     <p class="my-0 ms-2">Profile</p>
@@ -17,7 +17,7 @@
             </NavLink>
         </div>
         <div class="nav-item py-2">
-            <NavLink class="nav-link d-inline-flex" href="fetchdata">
+            <NavLink class="nav-link d-inline-flex" href="post" Match="NavLinkMatch.All">
                 <i class="fa-solid fa-square-plus my-auto me-3" style="width: 1rem"></i>
                 <div class="nav-text">
                     <p class="my-0 ms-2">Post</p>
@@ -27,15 +27,15 @@
         <div class="nav-item py-2">
             <AuthorizeView>
                 <Authorized>
-                    <NavLink class="nav-link d-inline-flex" href="fetchdata">
+                    <NavLink class="nav-link d-inline-flex" href="logout" Match="NavLinkMatch.All">
                         <i class="fa-solid fa-key my-auto me-3" style="width: 1rem"></i>
                         <div class="nav-text">
-                            <p class="my-0 ms-2">Welcome @context.User?.Identity?.Name</p>
+                            <p class="my-0 ms-2">Logout</p>
                         </div>
                     </NavLink>
                 </Authorized>
                 <NotAuthorized>
-                    <NavLink class="nav-link d-inline-flex" href="fetchdata">
+                    <NavLink class="nav-link d-inline-flex" href="login" Match="NavLinkMatch.All">
                         <i class="fa-solid fa-key my-auto me-3" style="width: 1rem"></i>
                         <div class="nav-text">
                             <p class="my-0 ms-2">Login</p>
