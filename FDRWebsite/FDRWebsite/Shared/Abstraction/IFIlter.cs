@@ -1,4 +1,6 @@
-﻿namespace FDRWebsite.Shared.Abstraction
+﻿using System.Data;
+
+namespace FDRWebsite.Shared.Abstraction
 {
     public interface IFilter<ModelType>
     {

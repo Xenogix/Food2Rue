@@ -1,4 +1,6 @@
+using FDRWebsite.Client.Authentication;
 using FDRWebsite.Client.Clients;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -13,6 +15,7 @@ namespace FDRWebsite.Client
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
             builder.Services.AddAuthorizationCore();
+            builder.Services.AddScoped<AuthenticationStateProvider, LocalAuthenticationStateProvider>();
 
             // Adding Microsoft Identity authentication
             builder.Services.AddMsalAuthentication(azureOptions => {
