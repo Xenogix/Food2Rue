@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using FDRWebsite.Server.Abstractions.Filters;
 using FDRWebsite.Server.Abstractions.Repositories;
 using FDRWebsite.Shared.Abstraction;
 using FDRWebsite.Shared.Models;
@@ -56,24 +57,20 @@ namespace FDRWebsite.Server.Repositories
                 return U[0];
         }
 
-        public async Task<IEnumerable<Utilisateur>> GetAsync(IFilter<Utilisateur> modelFilter)
+        public async Task<IEnumerable<Utilisateur>> GetAsync(IFilter filter)
         {
-            var test = $@"SELECT {TABLE_NAME}.id, {TABLE_NAME}.nom, {TABLE_NAME}.prénom, {TABLE_NAME}.email, {TABLE_NAME}.pseudo, {TABLE_NAME}.password, {TABLE_NAME}.date_naissance, {TABLE_NAME}.date_creation_profil, {TABLE_NAME}.description, media.id, media.url_source, pays.id, pays.sigle, pays.nom FROM {TABLE_NAME} 
-                LEFT JOIN media ON {TABLE_NAME}.fk_photo_profil = media.id
-                LEFT JOIN pays ON {TABLE_NAME}.fk_pays = pays.id 
-                WHERE {modelFilter.GetFilterSQL()}";
             return await connection.QueryAsync<Utilisateur, Image, Pays, Utilisateur>(
                 $@"SELECT {TABLE_NAME}.id, {TABLE_NAME}.nom, {TABLE_NAME}.prénom, {TABLE_NAME}.email, {TABLE_NAME}.pseudo, {TABLE_NAME}.password, {TABLE_NAME}.date_naissance, {TABLE_NAME}.date_creation_profil, {TABLE_NAME}.description, media.id, media.url_source, pays.id, pays.sigle, pays.nom FROM {TABLE_NAME} 
                 LEFT JOIN media ON {TABLE_NAME}.fk_photo_profil = media.id
                 LEFT JOIN pays ON {TABLE_NAME}.fk_pays = pays.id 
-                WHERE {modelFilter.GetFilterSQL()};",
+                WHERE {filter.GetFilterSQL()};",
                 (User, Image, Pays) =>
                 {
                     User.Photo_Profil = Image;
                     User.Pays = Pays;
                     return User;
                 },
-                modelFilter.GetFilterParameters(),
+                filter.GetFilterParameters(),
                 splitOn: "id,id");
         }
 

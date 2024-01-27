@@ -1,5 +1,6 @@
+using FDRWebsite.Server.Abstractions.Filters;
+using FDRWebsite.Server.Abstractions.Repositories;
 using FDRWebsite.Server.Authentication;
-using FDRWebsite.Server.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
@@ -15,6 +16,7 @@ namespace FDRWebsite
 
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
+            builder.Services.AddFilters();
             builder.Services.AddRepositories();
             builder.Services.AddSwaggerGen();
             builder.Services.AddScoped<AuthorizationProvider>();
@@ -43,7 +45,6 @@ namespace FDRWebsite
                 conn.Open();
                 return conn;
             });
-
 
             var app = builder.Build();
 

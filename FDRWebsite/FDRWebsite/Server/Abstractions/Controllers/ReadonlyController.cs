@@ -1,4 +1,5 @@
-﻿using FDRWebsite.Server.Abstractions.Repositories;
+﻿using FDRWebsite.Server.Abstractions.Filters;
+using FDRWebsite.Server.Abstractions.Repositories;
 using FDRWebsite.Shared.Abstraction;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,15 +7,17 @@ namespace FDRWebsite.Server.Abstractions.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public abstract class ReadonlyController<ModelType, KeyType> : ControllerBase
+    public abstract class ReadonlyController<ModelType, KeyType, ParametersType> : ControllerBase
         where ModelType : IIdentifiable<KeyType>
         where KeyType : IEquatable<KeyType>
     {
         private readonly IReadonlyRepositoryBase<ModelType, KeyType> repository;
+        private readonly IFilter<ParametersType> filter;
 
-        public ReadonlyController(IReadonlyRepositoryBase<ModelType, KeyType> repository)
+        public ReadonlyController(IReadonlyRepositoryBase<ModelType, KeyType> repository, IFilter<ParametersType> filter)
         {
             this.repository = repository;
+            this.filter = filter;
         }
 
         [HttpGet]
@@ -29,10 +32,11 @@ namespace FDRWebsite.Server.Abstractions.Controllers
             return await repository.GetAsync(key);
         }
 
-        [HttpGet("filter")]
-        public async Task<IEnumerable<ModelType?>> GetAsync(IFilter<ModelType> modelFilter)
+        [HttpPost("filter")]
+        public async Task<IEnumerable<ModelType?>> PostAsync(ParametersType parameters)
         {
-            return await repository.GetAsync(modelFilter);
+            filter.SetParameters(parameters);
+            return await repository.GetAsync(filter);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using FDRWebsite.Server.Abstractions.Filters;
 using FDRWebsite.Server.Abstractions.Repositories;
 using FDRWebsite.Shared.Abstraction;
 using FDRWebsite.Shared.Models;
@@ -49,12 +50,12 @@ namespace FDRWebsite.Server.Repositories
                 return U[0];
         }
 
-        public async Task<IEnumerable<Video>> GetAsync(IFilter<Video> modelFilter)
+        public async Task<IEnumerable<Video>> GetAsync(IFilter filter)
         {
             return await connection.QueryAsync<Video>(
                 $@"SELECT {TABLE_NAME}.id, url_source FROM {TABLE_NAME}
                 INNER JOIN media ON media.id = {TABLE_NAME}.id
-                WHERE {modelFilter.GetFilterSQL}
+                WHERE {filter.GetFilterSQL}
                 ;");
         }
 

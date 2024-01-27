@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using FDRWebsite.Server.Abstractions.Filters;
 using FDRWebsite.Server.Abstractions.Repositories;
 using FDRWebsite.Shared.Abstraction;
 using FDRWebsite.Shared.Models;
@@ -42,11 +43,11 @@ namespace FDRWebsite.Server.Repositories
             );
         }
 
-        public async Task<IEnumerable<Allergene>> GetAsync(IFilter<Allergene> modelFilter)
+        public async Task<IEnumerable<Allergene>> GetAsync(IFilter filter)
         {
             return await connection.QueryAsync<Allergene>(
-                @$"SELECT nom AS id FROM {TABLE_NAME} WHERE {modelFilter.GetFilterSQL()};",
-                modelFilter.GetFilterParameters()
+                @$"SELECT nom AS id FROM {TABLE_NAME} WHERE {filter.GetFilterSQL()};",
+                filter.GetFilterParameters()
             );
         }
 

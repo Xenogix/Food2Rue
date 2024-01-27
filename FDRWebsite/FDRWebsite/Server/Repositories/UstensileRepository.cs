@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using FDRWebsite.Server.Abstractions.Filters;
 using FDRWebsite.Server.Abstractions.Repositories;
 using FDRWebsite.Shared.Abstraction;
 using FDRWebsite.Shared.Models;
@@ -64,7 +65,7 @@ namespace FDRWebsite.Server.Repositories
                 return U[0];
         }
 
-        public async Task<IEnumerable<Ustensile>> GetAsync(IFilter<Ustensile> modelFilter)
+        public async Task<IEnumerable<Ustensile>> GetAsync(IFilter filter)
         {
             return await connection.QueryAsync<Ustensile, Image, Ustensile>(
                 $@"SELECT {TABLE_NAME}.id, {TABLE_NAME}.nom, {TABLE_NAME}.description, {TABLE_NAME}.date_publication
@@ -75,7 +76,7 @@ namespace FDRWebsite.Server.Repositories
                 FROM {TABLE_NAME}
                 LEFT JOIN media ON media.id = {TABLE_NAME}.id
                 INNER JOIN image ON image.id = media.id
-                WHERE {modelFilter.GetFilterSQL}
+                WHERE {filter.GetFilterSQL}
                 ;",
                 (Ingredient, Image) =>
                 {

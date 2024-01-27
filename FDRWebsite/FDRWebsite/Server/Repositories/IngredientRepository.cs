@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using FDRWebsite.Server.Abstractions.Filters;
 using FDRWebsite.Server.Abstractions.Repositories;
 using FDRWebsite.Shared.Abstraction;
 using FDRWebsite.Shared.Models;
@@ -88,11 +89,11 @@ namespace FDRWebsite.Server.Repositories
             return results.Values.FirstOrDefault();
         }
 
-        public async Task<IEnumerable<Ingredient>> GetAsync(IFilter<Ingredient> modelFilter)
+        public async Task<IEnumerable<Ingredient>> GetAsync(IFilter filter)
         {
             Dictionary<int, Ingredient> results = new();
             await connection.QueryAsync(
-                $@"{SELECT_QUERY} WHERE {modelFilter.GetFilterSQL};",
+                $@"{SELECT_QUERY} WHERE {filter.GetFilterSQL};",
                 GetFieldMapper(results),
                 splitOn: SPLIT_ON);
             return results.Values;

@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using FDRWebsite.Server.Abstractions.Filters;
 using FDRWebsite.Server.Abstractions.Repositories;
 using FDRWebsite.Shared.Abstraction;
 using FDRWebsite.Shared.Models;
@@ -44,13 +45,13 @@ namespace FDRWebsite.Server.Repositories
             );
         }
 
-        public async Task<IEnumerable<Image>> GetAsync(IFilter<Image> modelFilter)
+        public async Task<IEnumerable<Image>> GetAsync(IFilter filter)
         {
             return await connection.QueryAsync<Image>(
                 $@"SELECT {TABLE_NAME}.id, url_source FROM {TABLE_NAME}
                 INNER JOIN media ON media.id = {TABLE_NAME}.id
-                WHERE {modelFilter.GetFilterSQL};",
-                modelFilter.GetFilterParameters()
+                WHERE {filter.GetFilterSQL};",
+                filter.GetFilterParameters()
                 );
         }
 

@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using FDRWebsite.Server.Abstractions.Filters;
 using FDRWebsite.Server.Abstractions.Repositories;
 using FDRWebsite.Shared.Abstraction;
 using FDRWebsite.Shared.Models;
@@ -106,8 +107,24 @@ namespace FDRWebsite.Server.Repositories
             return Publications.FirstOrDefault();
         }
 
-        public async Task<IEnumerable<Publication>> GetAsync(IFilter<Publication> modelFilter)
+        public async Task<IEnumerable<Publication>> GetAsync(IFilter filter)
         {
+            var test = $@"SELECT publication.id, publication.texte, publication.date_publication, publication.fk_parent, publication.fk_utilisateur, publication.fk_recette, COUNT(DISTINCT aime_publication_utilisateur.fk_utilisateur) AS aime, video.id, mediavid.url_source, 
+                array_agg(DISTINCT mediaim.id || ',' || mediaim.url_source) AS images,
+                array_agg(DISTINCT tag.id || ',' ||tag.nom) AS tags 
+                FROM publication
+                LEFT JOIN media AS mediavid ON mediavid.id = publication.id
+                LEFT JOIN video ON video.id = mediavid.id
+                LEFT JOIN aime_publication_utilisateur ON aime_publication_utilisateur.fk_publication = publication.id
+                LEFT JOIN publication_image ON publication_image.fk_publication = publication.id
+                LEFT JOIN media AS mediaim ON mediaim.id = publication_image.fk_image
+                LEFT JOIN image ON mediaim.id = image.id
+                LEFT JOIN publication_tag ON publication_tag.fk_publication = publication.id
+                LEFT JOIN tag ON tag.id = publication_tag.fk_tag
+                WHERE {filter.GetFilterSQL()}
+                GROUP BY publication.id, publication.texte, publication.date_publication, publication.fk_parent, publication.fk_utilisateur, publication.fk_recette, video.id, mediavid.url_source
+                ;";
+
             IEnumerable<Publication> Publications = await connection.QueryAsync<Publication, Video, string[], string[], Publication>(
                 $@"SELECT publication.id, publication.texte, publication.date_publication, publication.fk_parent, publication.fk_utilisateur, publication.fk_recette, COUNT(DISTINCT aime_publication_utilisateur.fk_utilisateur) AS aime, video.id, mediavid.url_source, 
                 array_agg(DISTINCT mediaim.id || ',' || mediaim.url_source) AS images,
@@ -121,7 +138,7 @@ namespace FDRWebsite.Server.Repositories
                 LEFT JOIN image ON mediaim.id = image.id
                 LEFT JOIN publication_tag ON publication_tag.fk_publication = publication.id
                 LEFT JOIN tag ON tag.id = publication_tag.fk_tag
-                WHERE {modelFilter.GetFilterSQL()}
+                WHERE {filter.GetFilterSQL()}
                 GROUP BY publication.id, publication.texte, publication.date_publication, publication.fk_parent, publication.fk_utilisateur, publication.fk_recette, video.id, mediavid.url_source
                 ;",
                 (Publication, Video, images, tags) =>

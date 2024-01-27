@@ -3,10 +3,10 @@
 }
 
 .nav-background {
-    background: #F7F7F7;
     border-style: solid;
-    border-color: #D4D4D4;
-    border-width: 2px;
+    border-color: #F5F5F5;
+    border-width: 1px;
+    box-shadow: rgba(55, 55, 60, 0.2) 0px 7px 29px 0px;
 }
 
 .nav-text > p {

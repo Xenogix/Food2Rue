@@ -9,8 +9,9 @@ namespace FDRWebsite.Shared.Models
         public required String Nom { get; set; }
 
         // override object.Equals
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
+            if (obj == null) return false;
             if (obj == null || GetType() != obj.GetType())
                 return false;
             return ID.Equals(((Tag)obj).ID) && Nom.Equals(((Tag)obj).Nom);

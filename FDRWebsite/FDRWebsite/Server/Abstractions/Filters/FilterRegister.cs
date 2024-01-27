@@ -1,13 +1,14 @@
 ﻿using FDRWebsite.Server.Abstractions.Repositories;
+using FDRWebsite.Server.Filters;
 using System.Reflection;
 
-namespace FDRWebsite.Server.Repositories
+namespace FDRWebsite.Server.Abstractions.Filters
 {
-    public static class RepositoryRegister
+    public static class FilterRegister
     {
-        public static IServiceCollection AddRepositories(this IServiceCollection services)
+        public static IServiceCollection AddFilters(this IServiceCollection services)
         {
-            var interfaces = new Type[] { typeof(IRepositoryBase<,>), typeof(IReadonlyRepositoryBase<,>) };
+            var interfaces = new Type[] { typeof(IFilter<>) };
             var assemblyTypes = Assembly.GetExecutingAssembly().GetTypes();
             var implementations = assemblyTypes.Where(
                 x => !x.IsInterface &&

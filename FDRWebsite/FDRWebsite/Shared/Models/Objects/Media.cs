@@ -12,8 +12,9 @@ namespace FDRWebsite.Shared.Models
     public class Image : Media
     {
         // override object.Equals
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
+            if (obj == null) return false;
             return ID.Equals(((Image)obj).ID) && URL_Source.Equals(((Image)obj).URL_Source);
         }
 
@@ -27,8 +28,9 @@ namespace FDRWebsite.Shared.Models
     public class Video : Media
     {
         // override object.Equals
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
+            if (obj == null) return false;
             return ID.Equals(((Image)obj).ID) && URL_Source.Equals(((Image)obj).URL_Source);
         }
 

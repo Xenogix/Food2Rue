@@ -1,14 +1,24 @@
-﻿.banner {
-    background: rgb(255,221,28);
-    background: linear-gradient(90deg, rgba(255,221,28,1) 0%, rgba(255,76,31,1) 46%, rgba(255,35,97,1) 82%, rgba(255,0,152,1) 100%);
-    height: 10rem;
-    width: 100%;
+﻿.profile-image {
+    margin: 1rem auto;
+    width: 20rem;
+    height: 20rem;
+    background-size: cover;
+    background-position: center;
 }
 
-.user-icon {
-    height: 5rem;
-    width: 5rem;
-    margin-top: -2.5rem;
-    background: white;
-    margin: auto;
+.pentagon {
+    clip-path: polygon(50% 0, 100% 45%, 80% 100%, 20% 100%, 0 45%);
+    filter: url('#pentagon-filter-tag');
+}
+
+.pentagon-filter {
+    visibility: hidden;
+    position: absolute;
+    width: 0px;
+    height: 0px;
+}
+
+.profile-infos {
+    border-radius: 2rem;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }

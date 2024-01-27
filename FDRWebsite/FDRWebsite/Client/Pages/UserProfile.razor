@@ -1,25 +1,67 @@
 ﻿@page "/userprofile/{UserId:int}"
 @using FDRWebsite.Client.Clients;
+@using FDRWebsite.Client.Components
 @using FDRWebsite.Shared.Models;
 @using FDRWebsite.Shared
 
-<div class="d-flex align-content-center w-100">
-    @if (UserId == null)
+<div class="container mt-4">
+    @if (user == null)
     {
+        <div class="row">
+            <div class="col text-center">
+                <h3>This user does not exists or was deleted...</h3>
+            </div>
+        </div>
     }
     else
     {
-        <div class="d-flex flex-column justify-content-center w-100">
-            <div class="banner">
-
+        <div class="row">
+            <div class="col pentagon">
+                <div class="profile-image pentagon" style="background-image: url(https://buffer.com/library/content/images/2023/10/free-images.jpg)"></div>
+                <svg class="pentagon-filter" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <filter id="pentagon-filter-tag">
+                            <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur" />
+                            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="pentagon-filter-tag" />
+                            <feComposite in="SourceGraphic" in2="pentagon-filter-tag" operator="atop" />
+                        </filter>
+                    </defs>
+                </svg>
             </div>
-                
-            <div class="user-icon">
+        </div>
 
+        <div class="row my-2">
+            <div class="col text-center">
+                <h2>@user.Pseudo</h2>
             </div>
+        </div>
 
-            <div>
+        <div class="row my-5">
+            <div class="col">
+                <div class="profile-infos">
+                    <div class="container">
+                        <div class="row py-3">
+                            <div class="col text-center">
+                                <i class="fa-solid fa-users"></i>
+                                <p class="my-0">Followers</p>
+                            </div>
+                            <div class="col text-center">
+                                <i class="fa-solid fa-heart"></i>
+                                <p class="my-0">Likes</p>
+                            </div>
+                            <div class="col text-center">
+                                <i class="fa-solid fa-comment"></i>
+                                <p class="my-0">Posts</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <div class="row my-5">
+            <div class="col text-center">
+                <PostThread Posts="UserPosts"/>
             </div>
         </div>
     }

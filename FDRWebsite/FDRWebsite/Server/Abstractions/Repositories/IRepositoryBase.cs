@@ -1,4 +1,5 @@
-﻿using FDRWebsite.Shared.Abstraction;
+﻿using FDRWebsite.Server.Abstractions.Filters;
+using FDRWebsite.Shared.Abstraction;
 
 namespace FDRWebsite.Server.Abstractions.Repositories
 {
@@ -23,7 +24,7 @@ namespace FDRWebsite.Server.Abstractions.Repositories
         /// Get every <see cref="ModelType"/> in the physical model that match the given filter
         /// </summary>
         /// <returns>The fetched <see cref="ModelType"/></returns>
-        Task<IEnumerable<ModelType>> GetAsync(IFilter<ModelType> modelFilter);
+        Task<IEnumerable<ModelType>> GetAsync(IFilter filter);
 
         /// <summary>
         /// Insert a new <see cref="ModelType"/> in the physical model 

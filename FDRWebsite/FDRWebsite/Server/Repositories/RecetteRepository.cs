@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using FDRWebsite.Server.Abstractions.Filters;
 using FDRWebsite.Server.Abstractions.Repositories;
 using FDRWebsite.Shared.Abstraction;
 using FDRWebsite.Shared.Models;
@@ -128,7 +129,7 @@ namespace FDRWebsite.Server.Repositories
             return recettes.FirstOrDefault();
         }
 
-        public async Task<IEnumerable<Recette>> GetAsync(IFilter<Recette> modelFilter)
+        public async Task<IEnumerable<Recette>> GetAsync(IFilter filter)
         {
             return await connection.QueryAsync<Recette, Video, Pays, string[], string[], string[], int[], Recette>(
                 @$"SELECT {TABLE_NAME}.id, {TABLE_NAME}.nom, {TABLE_NAME}.temps_preparation, {TABLE_NAME}.temps_cuisson, {TABLE_NAME}.temps_repos, {TABLE_NAME}.date_creation, {TABLE_NAME}.etape, {TABLE_NAME}.Fk_Utilisateur,
@@ -151,7 +152,7 @@ namespace FDRWebsite.Server.Repositories
                     LEFT JOIN tag ON recette_tag.fk_tag =  tag.id
                     LEFT JOIN recette_ingredient AS ingredient ON recette.id = ingredient.fk_recette
                     LEFT JOIN recette_ustensile AS ustensile ON recette.id = ustensile.fk_recette
-                    WHERE {TABLE_NAME}.id = {modelFilter.GetFilterSQL}
+                    WHERE {TABLE_NAME}.id = {filter.GetFilterSQL}
                     GROUP BY {TABLE_NAME}.id, {TABLE_NAME}.nom, {TABLE_NAME}.temps_preparation, {TABLE_NAME}.temps_cuisson, {TABLE_NAME}.temps_repos, {TABLE_NAME}.date_creation, {TABLE_NAME}.etape, {TABLE_NAME}.Fk_Utilisateur,
                         mediavid.id, mediavid.url_source, 
                         pays.id, pays.sigle, pays.nom

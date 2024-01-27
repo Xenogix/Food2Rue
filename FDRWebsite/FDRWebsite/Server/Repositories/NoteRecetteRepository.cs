@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using FDRWebsite.Server.Abstractions.Filters;
 using FDRWebsite.Server.Abstractions.Repositories;
 using FDRWebsite.Shared.Abstraction;
 using FDRWebsite.Shared.Models;
@@ -75,11 +76,11 @@ namespace FDRWebsite.Server.Repositories
             return NoteRecette.FirstOrDefault();
         }
 
-        public async Task<IEnumerable<NoteRecette>> GetAsync(IFilter<NoteRecette> modelFilter)
+        public async Task<IEnumerable<NoteRecette>> GetAsync(IFilter filter)
         {
             return await connection.QueryAsync<NoteRecette>(
                 @$"SELECT fk_utilisateur, fk_recette, note FROM {TABLE_NAME}
-                WHERE {modelFilter.GetFilterSQL()};"
+                WHERE {filter.GetFilterSQL()};"
             );
         }
 

@@ -1,5 +1,6 @@
 ﻿using Azure;
 using Dapper;
+using FDRWebsite.Server.Abstractions.Filters;
 using FDRWebsite.Server.Abstractions.Repositories;
 using FDRWebsite.Shared.Abstraction;
 using FDRWebsite.Shared.Models;
@@ -123,14 +124,14 @@ namespace FDRWebsite.Server.Repositories
             return ObjectTag.FirstOrDefault();
         }
 
-        public async Task<IEnumerable<ObjectTag>> GetAsync(IFilter<ObjectTag> modelFilter)
+        public async Task<IEnumerable<ObjectTag>> GetAsync(IFilter filter)
         {
             IEnumerable<ObjectTag> ObjectTag = await connection.QueryAsync<ObjectTag, string[], ObjectTag>(
                 $@"SELECT {TABLE_NAME}.{FK}, 
                 array_agg(DISTINCT tag.id || ',' || tag.nom) AS tags 
                 FROM {TABLE_NAME}
                 INNER JOIN tag ON tag.id = {TABLE_NAME}.fk_tag
-                WHERE {modelFilter.GetFilterSQL()}
+                WHERE {filter.GetFilterSQL()}
                 GROUP BY {TABLE_NAME}.{FK};",
                 (ObjectTag, tags) =>
                 {

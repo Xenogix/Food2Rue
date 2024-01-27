@@ -1,0 +1,13 @@
+﻿
+@if(PostsToLoad == null || !PostsToLoad.Any())
+{
+    <div class="d-flex flex-column align-self-center">
+        <i class="fa-solid fa-fire mx-auto m-4" style="font-size:4em"></i>
+        <h3 class="mx-auto">Il n'y a rien ici pour le moment !</h3>
+        <h3 class="mx-auto">Postez une publication ou revenez plus tard</h3>
+    </div>
+}
+else
+{
+    <PostThread Posts="PostsToLoad" />
+}

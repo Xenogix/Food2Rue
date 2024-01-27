@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using FDRWebsite.Server.Abstractions.Filters;
 using FDRWebsite.Server.Abstractions.Repositories;
 using FDRWebsite.Shared.Abstraction;
 using FDRWebsite.Shared.Models;
@@ -120,7 +121,7 @@ namespace FDRWebsite.Server.Repositories
             return ObjectImages.FirstOrDefault();
         }
 
-        public async Task<IEnumerable<ObjectImage>> GetAsync(IFilter<ObjectImage> modelFilter)
+        public async Task<IEnumerable<ObjectImage>> GetAsync(IFilter filter)
         {
             IEnumerable<ObjectImage> ObjectImages = await connection.QueryAsync<ObjectImage, string[], ObjectImage>(
                 $@"SELECT {TABLE_NAME}.{FK}.fk_publication, 
@@ -128,7 +129,7 @@ namespace FDRWebsite.Server.Repositories
                 FROM {TABLE_NAME}.{FK}
                 INNER JOIN media ON media.id = {TABLE_NAME}.{FK}.fk_image
                 INNER JOIN image ON image.id = media.id
-                WHERE {modelFilter.GetFilterSQL()}
+                WHERE {filter.GetFilterSQL()}
                 GROUP BY {TABLE_NAME}.{FK}.fk_publication;",
                 (ObjectImage, images) =>
                 {
