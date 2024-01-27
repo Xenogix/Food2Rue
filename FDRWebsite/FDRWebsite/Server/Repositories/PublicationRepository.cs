@@ -163,8 +163,8 @@ namespace FDRWebsite.Server.Repositories
 
                 if(model.Tags != null)
                 {
-                    var publicationTagRepository = new PublicationTagRepository(connection);
-                    await publicationTagRepository.InsertAsync(new PublicationTag { ID = id, Tags = model.Tags }, transaction);
+                    var publicationTagRepository = new ObjectTagRepository(connection, "publication_tag", "fk_publication");
+                    await publicationTagRepository.InsertAsync(new ObjectTag { ID = id, Tags = model.Tags }, transaction);
                 }
                 if (model.Images != null)
                 {
@@ -195,7 +195,7 @@ namespace FDRWebsite.Server.Repositories
             }
             ImageRepository imageRepository = new ImageRepository(connection);
             TagRepository tagRepository = new TagRepository(connection);
-            PublicationTagRepository publicationTagRepository = new PublicationTagRepository(connection);
+            ObjectTagRepository publicationTagRepository = new ObjectTagRepository(connection, "publication_tag", "fk_publication");
             var objectImageRepository = new ObjectImageRepository(connection, "publication_image", "fk_publication");
             IDbTransaction transaction = connection.BeginTransaction();
             try
@@ -223,7 +223,7 @@ namespace FDRWebsite.Server.Repositories
                     transaction);
 
 
-                if (!await publicationTagRepository.UpdateAsync(key, new PublicationTag { ID = key, Tags = model.Tags }, transaction))
+                if (!await publicationTagRepository.UpdateAsync(key, new ObjectTag { ID = key, Tags = model.Tags }, transaction))
                 {
                     throw new System.Exception("Error while updating publication tags");
                 }

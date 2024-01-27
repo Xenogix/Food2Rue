@@ -2,7 +2,7 @@
 
 namespace FDRWebsite.Shared.Models
 {
-    public class PublicationTag : IIdentifiable<int>
+    public class ObjectTag : IIdentifiable<int>
     {
         public required int ID { get; set; }
 

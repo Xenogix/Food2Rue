@@ -309,7 +309,7 @@ VALUES ('./img/photo_profile_default.png');
 INSERT INTO image (id)
 VALUES (1);
 
-INSERT INTO utilisateur (nom, prénom, email, password, fk_photo_profil, pseudo, date_naissance, date_creation_profil, description, fk_pays)
+INSERT INTO utilisateur (nom, prenom, email, password, fk_photo_profil, pseudo, date_naissance, date_creation_profil, description, fk_pays)
 VALUES ('John', 'Doe', 'john.doe@example.com', 'password', 1, 'johndoe', '1990-01-01', '2022-01-01', 'Lorem ipsum dolor sit amet', 65),
         ('Jane', 'Smith', 'jane.smith@example.com', 'password', 1, 'janesmith', '1995-02-15', '2022-01-01', 'Lorem ipsum dolor sit amet', 43),
         ('Mike', 'Johnson', 'mike.johnson@example.com', 'password', 1, 'mikejohnson', '1985-06-30', '2022-01-01', 'Lorem ipsum dolor sit amet', 87),

@@ -55,7 +55,7 @@ CREATE TABLE  video (
 CREATE TABLE  utilisateur (
   id SERIAL,
   nom VARCHAR(255) NOT NULL,
-  prénom VARCHAR(255) NOT NULL,
+  prenom VARCHAR(255) NOT NULL,
   email VARCHAR(255) NOT NULL UNIQUE,
   fk_photo_profil INT DEFAULT 1 NOT NULL,
   pseudo VARCHAR(255) NOT NULL,
