@@ -25,6 +25,5 @@ namespace FDRWebsite.Shared.Models
         public required string Description { get; set; }
 
         public required Pays Pays { get; set; }
-
     }
 }

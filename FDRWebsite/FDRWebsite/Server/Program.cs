@@ -1,6 +1,9 @@
+using FDRWebsite.Server.Authentication;
 using FDRWebsite.Server.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Npgsql;
+using System.Text;
 
 namespace FDRWebsite
 {
@@ -10,13 +13,25 @@ namespace FDRWebsite
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            builder.Services.AddAuthentication()
-                .AddJwtBearer();
-
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
             builder.Services.AddRepositories();
+            builder.Services.AddSwaggerGen();
+            builder.Services.AddScoped<AuthorizationProvider>();
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                            .AddJwtBearer(options =>
+                            {
+                                options.TokenValidationParameters = new TokenValidationParameters
+                                {
+                                    ValidateIssuer = true,
+                                    ValidateAudience = true,
+                                    ValidateLifetime = true,
+                                    ValidateIssuerSigningKey = true,
+                                    ValidIssuer = builder.Configuration["JwtOptions:Issuer"],
+                                    ValidAudience = builder.Configuration["JwtOptions:Issuer"],
+                                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtOptions:Key"]!))
+                                };
+                            });
 
             builder.Configuration.SetBasePath(AppDomain.CurrentDomain.BaseDirectory);
             builder.Configuration.AddJsonFile("appsettings.json");
@@ -35,6 +50,8 @@ namespace FDRWebsite
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
+                app.UseSwagger();
+                app.UseSwaggerUI();
                 app.UseWebAssemblyDebugging();
             }
             else

@@ -3,13 +3,33 @@ using FDRWebsite.Server.Abstractions.Repositories;
 using FDRWebsite.Shared.Abstraction;
 using FDRWebsite.Shared.Models;
 using Npgsql;
-using System.Data;
 
 namespace FDRWebsite.Server.Repositories
 {
     public class IngredientRepository : IRepositoryBase<Ingredient, int>
     {
         private const string TABLE_NAME = "ingredient";
+
+        private const string FIELD_NAMES = @$"ajoutable.id, 
+                                              ajoutable.nom as nom_ajoutable,
+                                              ajoutable.description, 
+                                              ajoutable.date_publication,
+                                              ajoutable.Fk_Utilisateur,
+                                              ajoutable.Fk_Administrateur,
+                                              ajoutable.est_valide,
+                                              allergene.nom as nom,
+                                              image.id,
+                                              media.url_source";
+
+        private const string SELECT_QUERY = @$"SELECT {FIELD_NAMES}
+                                               FROM {TABLE_NAME}
+                                               INNER JOIN ajoutable ON ajoutable.id = {TABLE_NAME}.id
+                                               LEFT JOIN media ON media.id = {TABLE_NAME}.id
+                                               LEFT JOIN image ON image.id = ajoutable.fk_image
+                                               LEFT JOIN ingredient_allergene ON ingredient_allergene.fk_ingredient = {TABLE_NAME}.id
+                                               LEFT JOIN allergene ON allergene.nom = ingredient_allergene.fk_allergene";
+
+        private const string SPLIT_ON = "nom,id";
 
         private readonly NpgsqlConnection connection;
 
@@ -18,14 +38,29 @@ namespace FDRWebsite.Server.Repositories
             this.connection = connection;
         }
 
+        private Func<Ingredient, Allergene, Image, Ingredient> GetFieldMapper(Dictionary<int, Ingredient> resultsDictionnary)
+        {
+            return (ingredient, allergene, image) =>
+            {
+                if (resultsDictionnary.TryGetValue(ingredient.ID, out var existingIngredient))
+                    ingredient = existingIngredient;
+                else
+                    resultsDictionnary.Add(ingredient.ID, ingredient);
+
+                ingredient.Image = image;
+
+                if(allergene?.ID != null)
+                    ingredient.Allergenes.Add(allergene);
+
+                return ingredient;
+            };
+        }
+
         public async Task<bool> DeleteAsync(int key)
         {
             var affectedRows = await connection.ExecuteAsync(
-                $"DELETE FROM {TABLE_NAME} WHERE id = @Id",
-                new
-                {
-                    Id = key,
-                }
+                $"DELETE FROM {TABLE_NAME} WHERE id = @ID",
+                new { ID = key }
             );
 
             return affectedRows > 0;
@@ -33,53 +68,34 @@ namespace FDRWebsite.Server.Repositories
 
         public async Task<IEnumerable<Ingredient>> GetAsync()
         {
-            return await connection.QueryAsync<Ingredient, Image, Ingredient> (
-                $@"SELECT {TABLE_NAME}.id, {TABLE_NAME}.nom, {TABLE_NAME}.description, {TABLE_NAME}.date_publication
-                {TABLE_NAME}.Fk_Utilisateur
-                {TABLE_NAME}.Fk_Administrateur
-                {TABLE_NAME}.est_valide
-                image.id, image.url_source,
-                FROM {TABLE_NAME}
-                LEFT JOIN media ON media.id = {TABLE_NAME}.id
-                INNER JOIN image ON image.id = media.id
-                ;",
-                (Ingredient, Image) =>
-                {
-                    Ingredient.Image = Image;
-                    return Ingredient;
-                },
-                splitOn: "id,id");
+            Dictionary<int, Ingredient> results = new();
+            await connection.QueryAsync(
+                SELECT_QUERY,
+                GetFieldMapper(results),
+                splitOn: SPLIT_ON
+            );
+            return results.Values;
         }
 
         public async Task<Ingredient?> GetAsync(int key)
         {
-            IEnumerable<Ingredient> temps = await GetAsync();
-            var U = temps.Where(temp => temp.ID == key).ToList();
-            if (U.Count == 0)
-                return null;
-            else
-                return U[0];
+            Dictionary<int, Ingredient> results = new();
+            await connection.QueryAsync(
+                $"{SELECT_QUERY} LIMIT 1",
+                GetFieldMapper(results),
+                splitOn: SPLIT_ON
+            );
+            return results.Values.FirstOrDefault();
         }
 
         public async Task<IEnumerable<Ingredient>> GetAsync(IFilter<Ingredient> modelFilter)
         {
-            return await connection.QueryAsync<Ingredient, Image, Ingredient>(
-                $@"SELECT {TABLE_NAME}.id, {TABLE_NAME}.nom, {TABLE_NAME}.description, {TABLE_NAME}.date_publication
-                {TABLE_NAME}.Fk_Utilisateur
-                {TABLE_NAME}.Fk_Administrateur
-                {TABLE_NAME}.est_valide
-                image.id, image.url_source,
-                FROM {TABLE_NAME}
-                LEFT JOIN media ON media.id = {TABLE_NAME}.id
-                INNER JOIN image ON image.id = media.id
-                WHERE {modelFilter.GetFilterSQL}
-                ;",
-                (Ingredient, Image) =>
-                {
-                    Ingredient.Image = Image;
-                    return Ingredient;
-                },
-                splitOn: "id,id");
+            Dictionary<int, Ingredient> results = new();
+            await connection.QueryAsync(
+                $@"{SELECT_QUERY} WHERE {modelFilter.GetFilterSQL};",
+                GetFieldMapper(results),
+                splitOn: SPLIT_ON);
+            return results.Values;
         }
 
         public async Task<int> InsertAsync(Ingredient model)
@@ -101,10 +117,6 @@ namespace FDRWebsite.Server.Repositories
 
         public async Task<bool> UpdateAsync(int key, Ingredient model)
         {
-            if (!model.ID.Equals(0) && key != model.ID)
-            {
-                return false;
-            }
             var row = await connection.ExecuteAsync(
                 @$"UPDATE {TABLE_NAME} SET 
                 nom = @Nom, 
@@ -125,8 +137,8 @@ namespace FDRWebsite.Server.Repositories
                     Est_Valide = model.Est_Valide,
                     Id = key
                 });
+
             return row > 0;
         }
-
     }
 }

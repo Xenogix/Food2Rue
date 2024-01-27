@@ -20,11 +20,8 @@ namespace FDRWebsite.Server.Repositories
         public async Task<bool> DeleteAsync(string key)
         {
             var affectedRows = await connection.ExecuteAsync(
-                $"DELETE FROM {TABLE_NAME} WHERE nom = @Id",
-                new
-                {
-                    Id = key,
-                }
+                $"DELETE FROM {TABLE_NAME} WHERE nom = @ID",
+                new { ID = key }
             );
 
             return affectedRows > 0;
@@ -33,47 +30,38 @@ namespace FDRWebsite.Server.Repositories
         public async Task<IEnumerable<Allergene>> GetAsync()
         {
             return await connection.QueryAsync<Allergene>(
-                @$"SELECT nom AS id FROM {TABLE_NAME};"
+                @$"SELECT nom FROM {TABLE_NAME};"
             );
         }
 
         public async Task<Allergene?> GetAsync(string key)
         {
-            IEnumerable<Allergene> temps = await connection.QueryAsync<Allergene>(
+            return await connection.QueryFirstAsync<Allergene>(
                 @$"SELECT nom AS id FROM {TABLE_NAME} WHERE nom = @ID;",
                 new { ID = key }
             );
-            return temps.FirstOrDefault();
         }
 
         public async Task<IEnumerable<Allergene>> GetAsync(IFilter<Allergene> modelFilter)
         {
             return await connection.QueryAsync<Allergene>(
-                @$"SELECT nom AS id FROM {TABLE_NAME} WHERE @Filter;",
-                new { Filter = modelFilter.GetFilterSQL() }
+                @$"SELECT nom AS id FROM {TABLE_NAME} WHERE {modelFilter.GetFilterSQL()};",
+                modelFilter.GetFilterParameters()
             );
         }
 
         public async Task<string> InsertAsync(Allergene model)
         {
             return await connection.QueryFirstAsync<string>(
-            @$"INSERT INTO {TABLE_NAME} (nom) VALUES 
-                (@Nom) RETURNING nom;
-                ",
-                new { Nom = model.ID });
+            @$"INSERT INTO {TABLE_NAME} (nom) VALUES (@ID) RETURNING nom;",
+            new { ID = model.ID });
         }
 
         public async Task<bool> UpdateAsync(string key, Allergene model)
         {
-            if (!model.ID.Equals(0) && !key.Equals(model.ID))
-            {
-                return false;
-            }
             var row = await connection.ExecuteAsync(
-            @$"UPDATE {TABLE_NAME} SET 
-                nom = @ID
-                WHERE nom = @Id;",
-            new { ID = model.ID });
+            @$"UPDATE {TABLE_NAME} SET nom = @NewID WHERE nom = @ID;",
+            new { ID = model.ID, NewID = model.ID });
 
             return row > 0;
         }

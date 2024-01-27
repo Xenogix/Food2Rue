@@ -34,11 +34,14 @@ namespace FDRWebsite.Server.Repositories
         public async Task<IEnumerable<Ustensile>> GetAsync()
         {
             return await connection.QueryAsync<Ustensile, Image, Ustensile>(
-                $@"SELECT {TABLE_NAME}.id, {TABLE_NAME}.nom, {TABLE_NAME}.description, {TABLE_NAME}.date_publication
-                {TABLE_NAME}.Fk_Utilisateur
-                {TABLE_NAME}.Fk_Administrateur
-                {TABLE_NAME}.est_valide
-                image.id, image.url_source,
+                $@"SELECT {TABLE_NAME}.id, 
+                {TABLE_NAME}.nom, 
+                {TABLE_NAME}.description, 
+                {TABLE_NAME}.date_publication,
+                {TABLE_NAME}.Fk_Utilisateur,
+                {TABLE_NAME}.Fk_Administrateur,
+                {TABLE_NAME}.est_valide,
+                image.id, image.url_source
                 FROM {TABLE_NAME}
                 LEFT JOIN media ON media.id = {TABLE_NAME}.id
                 INNER JOIN image ON image.id = media.id
