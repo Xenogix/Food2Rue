@@ -27,10 +27,9 @@ DROP TABLE IF EXISTS media;
 DROP TABLE IF EXISTS pays;
 
 CREATE TABLE  pays (
-  id SERIAL,
   sigle VARCHAR(2),
   nom VARCHAR(255),
-  PRIMARY KEY (id)
+  PRIMARY KEY (sigle)
 );
 
 CREATE TABLE  media (
@@ -64,9 +63,9 @@ CREATE TABLE  utilisateur (
   date_naissance DATE NOT NULL,
   date_creation_profil DATE NOT NULL,
   description VARCHAR(255),
-  fk_pays INT NOT NULL,
+  fk_pays VARCHAR NOT NULL,
   PRIMARY KEY (id),
-  FOREIGN KEY (fk_pays) REFERENCES pays(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (fk_pays) REFERENCES pays(sigle) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (fk_photo_profil) REFERENCES image(id) ON DELETE SET DEFAULT ON UPDATE CASCADE,
   CONSTRAINT check_date CHECK (date_naissance < date_creation_profil + INTERVAL '13 years')
 );
@@ -87,11 +86,11 @@ CREATE TABLE  recette (
   etape VARCHAR(1023) NOT NULL,
   fk_utilisateur INT NOT NULL,
   fk_video INT,
-  fk_pays INT,
+  fk_pays VARCHAR,
   PRIMARY KEY (id),
   FOREIGN KEY (fk_utilisateur) REFERENCES utilisateur(id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (fk_video) REFERENCES video(id) ON DELETE SET NULL ON UPDATE CASCADE,
-  FOREIGN KEY (fk_pays) REFERENCES pays(id) ON DELETE CASCADE ON UPDATE CASCADE
+  FOREIGN KEY (fk_pays) REFERENCES pays(sigle) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE  publication (
