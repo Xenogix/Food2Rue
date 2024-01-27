@@ -15,6 +15,10 @@ namespace FDRWebsite.Shared.Models
         public required int Fk_Utilisateur { get; set; }
         public Video? Video { get; set; }
         public Pays? Pays { get; set; }
+        public IEnumerable<Image>? Images { get; set; }
+        public IEnumerable<Tag>? Tags { get; set; }
+        public Dictionary<int, string>? Ingredients { get; set; }
+        public IEnumerable<int>? Ustensiles { get; set; }
     }
 }
 

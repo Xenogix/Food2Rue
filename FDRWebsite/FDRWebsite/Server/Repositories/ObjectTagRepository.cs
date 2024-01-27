@@ -15,21 +15,28 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace FDRWebsite.Server.Repositories
 {
-    public class PublicationTagRepository : IRepositoryBase<PublicationTag, int>
+    public class ObjectTagRepository : IRepositoryBase<ObjectTag, int>
     {
-        private const string TABLE_NAME = "publication_tag";
+        private string TABLE_NAME = "publication_tag";
+        private string FK = "fk_publication";
 
         private readonly NpgsqlConnection connection;
 
-        public PublicationTagRepository(NpgsqlConnection connection)
+        public ObjectTagRepository(NpgsqlConnection connection)
         {
+            this.connection = connection;
+        }
+        public ObjectTagRepository(NpgsqlConnection connection, string table, string fk)
+        {
+            TABLE_NAME = table;
+            FK = fk;
             this.connection = connection;
         }
 
         public async Task<bool> DeleteAsync(int key)
         {
             var affectedRows = await connection.ExecuteAsync(
-                $"DELETE FROM {TABLE_NAME} WHERE fk_publication = @Id",
+                $"DELETE FROM {TABLE_NAME} WHERE {FK} = @Id",
                 new
                 {
                     Id = key
@@ -38,13 +45,13 @@ namespace FDRWebsite.Server.Repositories
 
             return affectedRows > 0;
         }
-        public async Task<bool> DeleteAsync(int keyPublication, int keyTag, IDbTransaction transaction)
+        public async Task<bool> DeleteAsync(int key, int keyTag, IDbTransaction transaction)
         {
             var affectedRows = await connection.ExecuteAsync(
-                $"DELETE FROM {TABLE_NAME} WHERE fk_publication = @IdPup AND fk_tag = @IdTag",
+                $"DELETE FROM {TABLE_NAME} WHERE {FK} = @Id AND fk_tag = @IdTag",
                 new
                 {
-                    IdPup = keyPublication,
+                    Id = key,
                     IdTag = keyTag
                 },
                 transaction
@@ -52,10 +59,10 @@ namespace FDRWebsite.Server.Repositories
 
             return affectedRows > 0;
         }
-        public async Task<bool> DeleteAsync(int keyPublication, int keyTag)
+        public async Task<bool> DeleteAsync(int key, int keyTag)
         {
             IDbTransaction transaction = connection.BeginTransaction();
-            if(!await DeleteAsync(keyPublication, keyTag, transaction))
+            if(!await DeleteAsync(key, keyTag, transaction))
             {
                 transaction.Rollback();
                 return false;
@@ -65,17 +72,17 @@ namespace FDRWebsite.Server.Repositories
             return true;
         }
 
-        public async Task<IEnumerable<PublicationTag>> GetAsync()
+        public async Task<IEnumerable<ObjectTag>> GetAsync()
         {
-            IEnumerable<PublicationTag> publicationTags = await connection.QueryAsync<PublicationTag, string[], PublicationTag>(
-                $@"SELECT publication_tag.fk_publication, 
+            IEnumerable<ObjectTag> ObjectTag = await connection.QueryAsync<ObjectTag, string[], ObjectTag>(
+                $@"SELECT {TABLE_NAME}.{FK}, 
                 array_agg(DISTINCT tag.id || ',' || tag.nom) AS tags 
-                FROM publication_tag
-                INNER JOIN tag ON tag.id = publication_tag.fk_tag
-                GROUP BY publication_tag.fk_publication;",
-                (PublicationTag, tags) =>
+                FROM {TABLE_NAME}
+                INNER JOIN tag ON tag.id = {TABLE_NAME}.fk_tag
+                GROUP BY {TABLE_NAME}.{FK};",
+                (ObjectTag, tags) =>
                 {
-                    PublicationTag.Tags = tags.Select(tag =>
+                    ObjectTag.Tags = tags.Select(tag =>
                     {
                         string[] tagSplit = tag.Split(',');
                         return new Tag
@@ -84,24 +91,24 @@ namespace FDRWebsite.Server.Repositories
                             Nom = tagSplit[1]
                         };
                     });
-                    return PublicationTag;
+                    return ObjectTag;
                 },
                 splitOn: "tags");
-            return publicationTags;
+            return ObjectTag;
         }
 
-        public async Task<PublicationTag?> GetAsync(int key)
+        public async Task<ObjectTag?> GetAsync(int key)
         {
-            IEnumerable<PublicationTag> publicationTags = await connection.QueryAsync<PublicationTag, string[], PublicationTag>(
-                $@"SELECT publication_tag.fk_publication, 
+            IEnumerable<ObjectTag> ObjectTag = await connection.QueryAsync<ObjectTag, string[], ObjectTag>(
+                $@"SELECT {TABLE_NAME}.{FK}, 
                 array_agg(DISTINCT tag.id || ',' || tag.nom) AS tags 
-                FROM publication_tag
-                INNER JOIN tag ON tag.id = publication_tag.fk_tag
-                WHERE publication_tag.fk_publication = {key}
-                GROUP BY publication_tag.fk_publication;",
-                (PublicationTag, tags) =>
+                FROM {TABLE_NAME}
+                INNER JOIN tag ON tag.id = {TABLE_NAME}.fk_tag
+                WHERE {TABLE_NAME}.{FK} = {key}
+                GROUP BY {TABLE_NAME}.{FK};",
+                (ObjectTag, tags) =>
                 {
-                    PublicationTag.Tags = tags.Select(tag =>
+                    ObjectTag.Tags = tags.Select(tag =>
                     {
                         string[] tagSplit = tag.Split(',');
                         return new Tag
@@ -110,24 +117,24 @@ namespace FDRWebsite.Server.Repositories
                             Nom = tagSplit[1]
                         };
                     });
-                    return PublicationTag;
+                    return ObjectTag;
                 },
                 splitOn: "tags");
-            return publicationTags.FirstOrDefault();
+            return ObjectTag.FirstOrDefault();
         }
 
-        public async Task<IEnumerable<PublicationTag>> GetAsync(IFilter<PublicationTag> modelFilter)
+        public async Task<IEnumerable<ObjectTag>> GetAsync(IFilter<ObjectTag> modelFilter)
         {
-            IEnumerable<PublicationTag> publicationTags = await connection.QueryAsync<PublicationTag, string[], PublicationTag>(
-                $@"SELECT publication_tag.fk_publication, 
+            IEnumerable<ObjectTag> ObjectTag = await connection.QueryAsync<ObjectTag, string[], ObjectTag>(
+                $@"SELECT {TABLE_NAME}.{FK}, 
                 array_agg(DISTINCT tag.id || ',' || tag.nom) AS tags 
-                FROM publication_tag
-                INNER JOIN tag ON tag.id = publication_tag.fk_tag
-                WHERE publication_tag.fk_publication = {modelFilter.GetFilterSQL()}
-                GROUP BY publication_tag.fk_publication;",
-                (PublicationTag, tags) =>
+                FROM {TABLE_NAME}
+                INNER JOIN tag ON tag.id = {TABLE_NAME}.fk_tag
+                WHERE {modelFilter.GetFilterSQL()}
+                GROUP BY {TABLE_NAME}.{FK};",
+                (ObjectTag, tags) =>
                 {
-                    PublicationTag.Tags = tags.Select(tag =>
+                    ObjectTag.Tags = tags.Select(tag =>
                     {
                         string[] tagSplit = tag.Split(',');
                         return new Tag
@@ -136,14 +143,14 @@ namespace FDRWebsite.Server.Repositories
                             Nom = tagSplit[1]
                         };
                     });
-                    return PublicationTag;
+                    return ObjectTag;
                 },
                 splitOn: "tags");
-            return publicationTags;
+            return ObjectTag;
         }
 
 
-        public async Task<int> InsertAsync(PublicationTag model)
+        public async Task<int> InsertAsync(ObjectTag model)
         {
             IDbTransaction transaction = connection.BeginTransaction();
             int row = await InsertAsync(model, transaction);
@@ -156,7 +163,7 @@ namespace FDRWebsite.Server.Repositories
             transaction.Commit();
             return row;
         }
-        public async Task<int> InsertAsync(PublicationTag model, IDbTransaction transaction)
+        public async Task<int> InsertAsync(ObjectTag model, IDbTransaction transaction)
         {
             TagRepository tagRepository = new TagRepository(connection);
             IEnumerable<Tag> AllTags = await tagRepository.GetAsync();
@@ -180,14 +187,14 @@ namespace FDRWebsite.Server.Repositories
                 }
             }
             if (!list.IsNullOrEmpty()) {
-                string query = $"INSERT INTO publication_tag (fk_publication, fk_tag) VALUES {String.Join(',', list)};";
+                string query = $"INSERT INTO {TABLE_NAME} ({FK}, fk_tag) VALUES {string.Join(',', list)};";
                 row += await connection.ExecuteAsync(query, transaction);
             }
 
             return row;
         }
 
-        public async Task<bool> UpdateAsync(int key, PublicationTag model)
+        public async Task<bool> UpdateAsync(int key, ObjectTag model)
         {
             IDbTransaction transaction = connection.BeginTransaction();
             bool b = await UpdateAsync(key, model, transaction);
@@ -200,7 +207,7 @@ namespace FDRWebsite.Server.Repositories
             transaction.Commit();
             return b;
         }
-        public async Task<bool> UpdateAsync(int key, PublicationTag model, IDbTransaction transaction)
+        public async Task<bool> UpdateAsync(int key, ObjectTag model, IDbTransaction transaction)
         {
             int row = await InsertAsync(model, transaction);
 
