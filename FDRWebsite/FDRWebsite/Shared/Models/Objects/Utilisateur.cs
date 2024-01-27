@@ -6,7 +6,7 @@ namespace FDRWebsite.Shared.Models
     {
         public int ID { get; set; }
 
-        public required string Prénom { get; set; }
+        public required string Prenom { get; set; }
 
         public required string Nom { get; set; }
 

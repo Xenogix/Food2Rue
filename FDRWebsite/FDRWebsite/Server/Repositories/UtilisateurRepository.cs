@@ -34,9 +34,9 @@ namespace FDRWebsite.Server.Repositories
         public async Task<IEnumerable<Utilisateur>> GetAsync()
         {
             return await connection.QueryAsync<Utilisateur, Image, Pays, Utilisateur>(
-                $@"SELECT {TABLE_NAME}.id, {TABLE_NAME}.nom, {TABLE_NAME}.prénom, {TABLE_NAME}.email, {TABLE_NAME}.pseudo, {TABLE_NAME}.password, {TABLE_NAME}.description, {TABLE_NAME}.date_naissance, {TABLE_NAME}.date_creation_profil, media.id, media.url_source, pays.id, pays.sigle, pays.nom FROM {TABLE_NAME} 
+                $@"SELECT {TABLE_NAME}.id, {TABLE_NAME}.nom, {TABLE_NAME}.prenom, {TABLE_NAME}.email, {TABLE_NAME}.pseudo, {TABLE_NAME}.password, {TABLE_NAME}.description, {TABLE_NAME}.date_naissance, {TABLE_NAME}.date_creation_profil, media.id, media.url_source, pays.sigle, pays.nom FROM {TABLE_NAME} 
                 LEFT JOIN media ON {TABLE_NAME}.fk_photo_profil = media.id
-                LEFT JOIN pays ON {TABLE_NAME}.fk_pays = pays.id
+                LEFT JOIN pays ON {TABLE_NAME}.fk_pays = pays.sigle
                 ;",
                 (User, Image, Pays) =>
                 {
@@ -44,30 +44,37 @@ namespace FDRWebsite.Server.Repositories
                     User.Pays = Pays;
                     return User;
                 },
-                splitOn: "id,id");
+                splitOn: "id,sigle");
         }
 
         public async Task<Utilisateur?> GetAsync(int key)
         {
-            IEnumerable<Utilisateur> temps = (IEnumerable<Utilisateur>)await GetAsync();
-            var U = temps.Where(temp => temp.ID == key).ToList();
-            if (U.Count == 0)
-                return null;
-            else
-                return U[0];
+            IEnumerable<Utilisateur> Utilisateurs = await connection.QueryAsync<Utilisateur, Image, Pays, Utilisateur>(
+                $@"SELECT {TABLE_NAME}.id, {TABLE_NAME}.nom, {TABLE_NAME}.prenom, {TABLE_NAME}.email, {TABLE_NAME}.pseudo, {TABLE_NAME}.password, {TABLE_NAME}.description, {TABLE_NAME}.date_naissance, {TABLE_NAME}.date_creation_profil, media.id, media.url_source, pays.sigle, pays.nom FROM {TABLE_NAME} 
+                LEFT JOIN media ON {TABLE_NAME}.fk_photo_profil = media.id
+                LEFT JOIN pays ON {TABLE_NAME}.fk_pays = pays.sigle
+                ;",
+                (User, Image, Pays) =>
+                {
+                    User.Photo_Profil = Image;
+                    User.Pays = Pays;
+                    return User;
+                },
+                splitOn: "id,sigle");
+            return Utilisateurs.FirstOrDefault();
         }
 
         public async Task<IEnumerable<Utilisateur>> GetAsync(IFilter filter)
         {
-            var a = $@"SELECT {TABLE_NAME}.id, {TABLE_NAME}.nom, {TABLE_NAME}.prénom, {TABLE_NAME}.email, {TABLE_NAME}.pseudo, {TABLE_NAME}.password, {TABLE_NAME}.date_naissance, {TABLE_NAME}.date_creation_profil, {TABLE_NAME}.description, media.id, media.url_source, pays.id, pays.sigle, pays.nom FROM {TABLE_NAME} 
+            var a = $@"SELECT {TABLE_NAME}.id, {TABLE_NAME}.nom, {TABLE_NAME}.prenom, {TABLE_NAME}.email, {TABLE_NAME}.pseudo, {TABLE_NAME}.password, {TABLE_NAME}.date_naissance, {TABLE_NAME}.date_creation_profil, {TABLE_NAME}.description, media.id, media.url_source, pays.sigle, pays.nom FROM {TABLE_NAME} 
                 LEFT JOIN media ON {TABLE_NAME}.fk_photo_profil = media.id
-                LEFT JOIN pays ON {TABLE_NAME}.fk_pays = pays.id 
+                LEFT JOIN pays ON {TABLE_NAME}.fk_pays = pays.sigle 
                 WHERE {filter.GetFilterSQL()};";
 
             return await connection.QueryAsync<Utilisateur, Image, Pays, Utilisateur>(
-                $@"SELECT {TABLE_NAME}.id, {TABLE_NAME}.nom, {TABLE_NAME}.prénom, {TABLE_NAME}.email, {TABLE_NAME}.pseudo, {TABLE_NAME}.password, {TABLE_NAME}.date_naissance, {TABLE_NAME}.date_creation_profil, {TABLE_NAME}.description, media.id, media.url_source, pays.id, pays.sigle, pays.nom FROM {TABLE_NAME} 
+                $@"SELECT {TABLE_NAME}.id, {TABLE_NAME}.nom, {TABLE_NAME}.prenom, {TABLE_NAME}.email, {TABLE_NAME}.pseudo, {TABLE_NAME}.password, {TABLE_NAME}.date_naissance, {TABLE_NAME}.date_creation_profil, {TABLE_NAME}.description, media.id, media.url_source, pays.sigle, pays.nom FROM {TABLE_NAME} 
                 LEFT JOIN media ON {TABLE_NAME}.fk_photo_profil = media.id
-                LEFT JOIN pays ON {TABLE_NAME}.fk_pays = pays.id 
+                LEFT JOIN pays ON {TABLE_NAME}.fk_pays = pays.sigle 
                 WHERE {filter.GetFilterSQL()};",
                 (User, Image, Pays) =>
                 {
@@ -76,17 +83,17 @@ namespace FDRWebsite.Server.Repositories
                     return User;
                 },
                 filter.GetFilterParameters(),
-                splitOn: "id,id");
+                splitOn: "id,sigle");
         }
 
         public async Task<int> InsertAsync(Utilisateur model)
         {
             return await connection.QueryFirstAsync<int>(
-                @$"INSERT INTO {TABLE_NAME} (nom, prénom, email, fk_photo_profil, pseudo, password, date_naissance, date_creation_profil, description, fk_pays) VALUES 
+                @$"INSERT INTO {TABLE_NAME} (nom, prenom, email, fk_photo_profil, pseudo, password, date_naissance, date_creation_profil, description, fk_pays) VALUES 
                 (@FirstName, @LastName, @Email, @Profile_photo, @Pseudo, @Password, @BirthDay, @ProfileCreation, @Description, @Country) RETURNING id",
                 new
                 {
-                    FirstName = model.Prénom,
+                    FirstName = model.Prenom,
                     LastName = model.Nom,
                     Email = model.Email,
                     Profile_photo = model.Photo_Profil.ID,
@@ -108,7 +115,7 @@ namespace FDRWebsite.Server.Repositories
             var row =  await connection.ExecuteAsync(
                 $"UPDATE {TABLE_NAME} SET " +
                         $"nom = @FirstName, " +
-                        $"prénom = @LastName, " +
+                        $"prenom = @LastName, " +
                         $"email = @Email, " +
                         $"fk_photo_profil = @Profile_photo, " +
                         $"pseudo = @Pseudo, " +
@@ -120,7 +127,7 @@ namespace FDRWebsite.Server.Repositories
                         $"WHERE id = @Id;",
             new
             {
-                FirstName = model.Prénom,
+                FirstName = model.Prenom,
                 LastName = model.Nom,
                 Email = model.Email,
                 Profile_photo = model.Photo_Profil.ID,

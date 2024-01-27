@@ -28,13 +28,22 @@ namespace FDRWebsite.Server.Repositories
         public async Task<Pays?> GetAsync(string key)
         {
             var parameters = new { key = key };
-            return await connection.QueryFirstAsync<Pays>(@$"SELECT sigle, nom FROM {TABLE_NAME} WHERE sigle = @key", parameters);
+            return await connection.QueryFirstAsync<Pays>(
+                @$"SELECT sigle, nom 
+                FROM {TABLE_NAME} 
+                WHERE sigle = @Key", 
+                new
+                {
+                    Key = key
+                }
+            );
         }
 
         public async Task<IEnumerable<Pays>> GetAsync(IFilter filter)
         {
             return await connection.QueryAsync<Pays>(
-                @$"SELECT sigle, nom FROM {TABLE_NAME} WHERE {filter.GetFilterSQL()};"
+                @$"SELECT sigle, nom FROM {TABLE_NAME} WHERE {filter.GetFilterSQL()};",
+                filter.GetFilterParameters()
             );
         }
 
