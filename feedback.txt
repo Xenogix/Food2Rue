@@ -1,0 +1,4 @@
+enlever etape juste une texte
+pays dans publication pas nessesaire
+ajoutable enfant de publication pour pouvoir mettre des commenaitre à une recette
+association entre recette et publication

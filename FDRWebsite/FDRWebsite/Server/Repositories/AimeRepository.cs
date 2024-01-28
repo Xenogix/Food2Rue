@@ -85,5 +85,10 @@ namespace FDRWebsite.Server.Repositories
 
             return row > 0;
         }
+
+        public Task<bool> UpdateAsync(int key, Aime model)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
