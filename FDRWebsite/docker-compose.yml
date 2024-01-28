@@ -1,0 +1,48 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP .NET Core service.
+version: '3.4'
+
+networks:
+  food-net:
+    driver: bridge
+    
+services:
+  postgresql:
+    image: 'bitnami/postgresql:16'
+    container_name: bdrFood2ruePostgreDB
+    environment:
+      - POSTGRESQL_USERNAME=food2rueUser
+      - POSTGRESQL_PASSWORD=food2rueUser
+      - POSTGRESQL_DATABASE=food2rue
+      - POSTGRESQL_POSTGRES_PASSWORD=root
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d
+    networks:
+      - food-net
+
+  blazorclientserverserver:
+    image: blazorclientserverserver
+    build:
+      context: .
+      dockerfile: FDRWebsite/Server/Dockerfile
+    ports:
+      - 4080:80
+      - 4443:443
+    networks:
+      - food-net
+    depends_on:
+      - postgresql
+  blazorclientserverclient:
+    image: blazorclientserverclient
+    build:
+      context: .
+      dockerfile: FDRWebsite/Client/Dockerfile
+    ports:
+      - 5080:80
+      - 5443:443
+    networks:
+      - food-net
+    depends_on:
+      - postgresql
+  
