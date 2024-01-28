@@ -1,4 +1,4 @@
-﻿using FDRWebsite.Shared.Abstraction;
+﻿using Microsoft.AspNetCore.Components;
 using Refit;
 
 namespace FDRWebsite.Client.Clients
@@ -11,13 +11,13 @@ namespace FDRWebsite.Client.Clients
         Task<IEnumerable<ModelType>> GetAsync();
 
         [Get("/{key}")]
-        Task<ModelType> GetAsync(KeyType key);
+        Task<ModelType?> GetAsync(KeyType key);
 
         [Post("/filter")]
-        Task<IEnumerable<ModelType>> PostAsync([Body] ParametersType parameters);
+        Task<IEnumerable<ModelType>> GetFilteredAsync([Body] ParametersType parameters);
 
         [Post("/")]
-        Task<KeyType> InsertAsync([Body] ModelType modelType);
+        Task<KeyType?> InsertAsync([Body] ModelType modelType);
 
         [Put("/{key}")]
         Task<bool> UpdateAsync(KeyType key, [Body] ModelType modelType);

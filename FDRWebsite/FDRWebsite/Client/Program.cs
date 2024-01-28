@@ -1,6 +1,7 @@
 using Blazored.LocalStorage;
 using FDRWebsite.Client.Abstractions.Clients;
 using FDRWebsite.Client.Authentication;
+using FDRWebsite.Client.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -20,6 +21,7 @@ namespace FDRWebsite.Client
             builder.Services.AddScoped<AuthenticationStateProvider, LocalAuthenticationStateProvider>();
             builder.Services.AddScoped<AuthenticationService>();
             builder.Services.AddBlazoredLocalStorage();
+            builder.Services.AddScoped<UserService>();
 
             IdentityModelEventSource.ShowPII = true;
 

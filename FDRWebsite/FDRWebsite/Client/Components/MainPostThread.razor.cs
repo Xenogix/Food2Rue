@@ -24,7 +24,7 @@ namespace FDRWebsite.Client.Components
         private async Task LoadPostsAsync()
         {
             var filter = new PublicationParameters() { IncludeComments = false };
-            PostsToLoad = await PublicationClient.PostAsync(filter);
+            PostsToLoad = await PublicationClient.GetFilteredAsync(filter);
         }
 
         private async Task RefreshPostsAsync()

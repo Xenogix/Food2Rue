@@ -65,7 +65,7 @@ namespace FDRWebsite.Server.Repositories
                 new { URLSource = model.URL_Source},
                 transaction);
 
-            await connection.QueryFirstAsync<int>(
+            int idImage = await connection.QueryFirstAsync<int>(
                 $@"INSERT INTO {TABLE_NAME} (id) VALUES (@ID) RETURNING id",
                 new { ID = @idMedia },
                 transaction);

@@ -36,7 +36,7 @@ namespace FDRWebsite.Client.Pages
         private async Task LoadPostsAsync(int userID)
         {
             var filter = new PublicationParameters() { UserIDs = new int[] { userID } };
-            UserPosts = await PublicationClient.PostAsync(filter);
+            UserPosts = await PublicationClient.GetFilteredAsync(filter);
         }
 
         private async Task RefreshPostsAsync(int userID)

@@ -11,6 +11,8 @@ namespace FDRWebsite.Client.Abstractions.Clients
             services.AddRefitClient(typeof(IPublicationClient)).ConfigureHttpClient(x => { x.BaseAddress = new Uri($"{baseUrl}api/publication"); });
             services.AddRefitClient(typeof(IUtilisateurClient)).ConfigureHttpClient(x => { x.BaseAddress = new Uri($"{baseUrl}api/utilisateurs"); });
             services.AddRefitClient(typeof(IPaysClient)).ConfigureHttpClient(x => { x.BaseAddress = new Uri($"{baseUrl}api/pays"); });
+            services.AddRefitClient(typeof(IImageClient)).ConfigureHttpClient(x => { x.BaseAddress = new Uri($"{baseUrl}api/image"); });
+            services.AddRefitClient(typeof(IFileClient)).ConfigureHttpClient(x => { x.BaseAddress = new Uri($"{baseUrl}api/files"); });
 
             return services;
         }
