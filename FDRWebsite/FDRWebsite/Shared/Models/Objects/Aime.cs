@@ -2,25 +2,24 @@
 
 namespace FDRWebsite.Shared.Models.Objects
 {
-    public class AimeKey : IEquatable<AimeKey>
+    public struct AimeKey : IEquatable<AimeKey>
     {
         public int IdPublication { get; set; }
 
         public int IdUtilisateur { get; set; }
 
-        public bool Equals(AimeKey? other)
+        public bool Equals(AimeKey other)
         {
-            if(other == null) return false;
             return IdPublication == other.IdPublication && IdUtilisateur == other.IdUtilisateur;
         }
     }
 
     public class Aime : IIdentifiable<AimeKey>
     {
-        public AimeKey ID => new AimeKey() { IdUtilisateur = IdUtilisateur, IdPublication = IdPublication };
+        public AimeKey ID => new AimeKey() { IdUtilisateur = fk_utilisateur, IdPublication = fk_publication };
 
-        public int IdPublication { get; set; }
+        public int fk_publication { get; set; }
 
-        public int IdUtilisateur { get; set; }
+        public int fk_utilisateur { get; set; }
     }
 }

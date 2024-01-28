@@ -23,7 +23,7 @@ namespace FDRWebsite.Server.Filters
 
             if (Parameters == null) return string.Empty;
 
-            if (Parameters.PublicationIDs != null) result.Append($"AND publication.fk_publication IN ({string.Join(",", Parameters.PublicationIDs)}) ");
+            if (Parameters.PublicationIDs != null) result.Append($"AND fk_publication IN ({string.Join(",", Parameters.PublicationIDs)}) ");
 
             return result.ToString();
         }

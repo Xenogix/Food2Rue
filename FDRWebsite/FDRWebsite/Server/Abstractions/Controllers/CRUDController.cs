@@ -52,7 +52,7 @@ namespace FDRWebsite.Server.Abstractions.Controllers
         }
 
         [HttpDelete("{key}")]
-        public async Task<bool> DeleteAsync(KeyType key)
+        public async Task<bool> DeleteAsync([FromBody] KeyType key)
         {
             return await repository.DeleteAsync(key);
         }

@@ -11,7 +11,7 @@ namespace FDRWebsite.Server.Repositories
     {
         private const string TABLE_NAME = "aime_publication_utilisateur";
 
-        private const string FIELD_NAME = @"publication.id, utilisateur.id";
+        private const string FIELD_NAME = @"fk_publication, fk_utilisateur";
 
         private const string SELECT_QUERY = @$"SELECT {FIELD_NAME}
                                                FROM {TABLE_NAME}";
@@ -25,7 +25,7 @@ namespace FDRWebsite.Server.Repositories
 
         public async Task<bool> DeleteAsync(AimeKey key)
         {
-            var affectedRows = await connection.ExecuteAsync($"DELETE FROM {TABLE_NAME} WHERE publication.id = @fk_publication utilisateur.id = @fk_utilisateur;",
+            var affectedRows = await connection.ExecuteAsync($"DELETE FROM {TABLE_NAME} WHERE fk_publication = @fk_publication AND fk_utilisateur = @fk_utilisateur;",
             new
             {
                 fk_publication = key.IdPublication,
@@ -37,34 +37,38 @@ namespace FDRWebsite.Server.Repositories
 
         public async Task<IEnumerable<Aime>> GetAsync()
         {
-            return (IEnumerable<Aime>)await connection.QueryAsync(SELECT_QUERY);
+            return await connection.QueryAsync<Aime>(SELECT_QUERY);
         }
 
         public async Task<Aime?> GetAsync(AimeKey key)
         {
-            return (Aime?)await connection.QueryAsync(@$"{SELECT_QUERY} WHERE publication.id = @fk_publication utilisateur.id = @fk_utilisateur;",
+            var result = await connection.QueryAsync<Aime>(@$"{SELECT_QUERY} WHERE fk_publication = @fk_publication AND fk_utilisateur = @fk_utilisateur;",
             new
             {
                 fk_publication = key.IdPublication,
                 fk_utilisateur = key.IdUtilisateur
             });
+
+            return result.FirstOrDefault();
         }
 
         public async Task<IEnumerable<Aime>> GetAsync(IFilter filter)
         {
-            return (IEnumerable<Aime>)await connection.QueryAsync(
-               $@"{SELECT_QUERY} WHERE {filter.GetFilterSQL};",
+            var a = $@"{SELECT_QUERY} WHERE {filter.GetFilterSQL()};";
+
+            return await connection.QueryAsync<Aime>(
+               $@"{SELECT_QUERY} WHERE {filter.GetFilterSQL()};",
                filter.GetFilterParameters());
         }
 
         public async Task<AimeKey> InsertAsync(Aime model)
         {
             return await connection.QueryFirstAsync<AimeKey>(
-                @$"INSERT INTO {TABLE_NAME} (fk_publication, fk_utilisateur) VALUES (@FK_Publication, FK_Utilisateur) RETURNING fk_publication as IdPublication, fk_utilisateur as IdUtilisateur",
+                @$"INSERT INTO {TABLE_NAME} (fk_publication, fk_utilisateur) VALUES (@FK_Publication, @FK_Utilisateur) RETURNING fk_publication as IdPublication, fk_utilisateur as IdUtilisateur",
                 new
                 {
-                    fk_publication = model.IdPublication,
-                    fk_utilisateur = model.IdUtilisateur
+                    fk_publication = model.fk_publication,
+                    fk_utilisateur = model.fk_utilisateur
                 });
         }
 
@@ -77,10 +81,10 @@ namespace FDRWebsite.Server.Repositories
                         WHERE publication.id = @oldIDUtilisateur AND utilisateur.id = @oldIDPublication",
                 new
                 {
-                    newIDUtilisateur = model.IdUtilisateur,
-                    newIDPublication = model.IdPublication,
-                    oldIDUtilisateur = model.IdUtilisateur,
-                    oldIDPublication = model.IdPublication,
+                    newIDUtilisateur = model.fk_utilisateur,
+                    newIDPublication = model.fk_publication,
+                    oldIDUtilisateur = model.fk_utilisateur,
+                    oldIDPublication = model.fk_publication,
                 });
 
             return row > 0;

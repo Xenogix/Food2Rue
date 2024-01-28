@@ -7,7 +7,7 @@
         {
             <div class="carousel-image" style="
             top: @((i-currentIndex)*HEIGHT_SHIFT)px; bottom: @((i-currentIndex)*HEIGHT_SHIFT)px; left: @((i-currentIndex)*RIGHT_SHIFT)px;
-            @(i == currentIndex - 1 ? "opacity: 0; pointer-events: none;" : "")
+            @((i == currentIndex - 1) || (i > currentIndex + MAX_STACK_SIZE) ? "opacity: 0; pointer-events: none;" : "")
             background-image:url(@(Medias.ElementAt(i).URL_Source))">
             </div>
         }

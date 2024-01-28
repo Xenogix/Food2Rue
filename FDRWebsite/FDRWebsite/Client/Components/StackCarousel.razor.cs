@@ -16,7 +16,7 @@ namespace FDRWebsite.Client.Components
 
         private int GetTopIndex()
         {
-            return Math.Min(currentIndex + MAX_STACK_SIZE, Medias.Count() - 1);
+            return Medias.Count() - 1;
         }
 
         private void MoveNext()

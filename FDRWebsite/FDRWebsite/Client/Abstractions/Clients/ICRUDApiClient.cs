@@ -23,6 +23,6 @@ namespace FDRWebsite.Client.Clients
         Task<bool> UpdateAsync(KeyType key, [Body] ModelType modelType);
 
         [Delete("/{key}")]
-        Task<bool> DeleteAsync(KeyType key);
+        Task<bool> DeleteAsync([Body] KeyType key);
     }
 }

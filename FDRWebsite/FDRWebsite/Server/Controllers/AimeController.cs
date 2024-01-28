@@ -11,6 +11,5 @@ namespace FDRWebsite.Server.Controllers
         public AimeController(IRepositoryBase<Aime, AimeKey> repository, IFilter<AimeParameters> filter) : base(repository, filter)
         {
         }
-
     }
 }
