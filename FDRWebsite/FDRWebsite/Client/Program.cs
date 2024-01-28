@@ -22,6 +22,8 @@ namespace FDRWebsite.Client
             builder.Services.AddScoped<AuthenticationService>();
             builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<ImageService>();
+            builder.Services.AddScoped<PostService>();
 
             IdentityModelEventSource.ShowPII = true;
 

@@ -2,7 +2,9 @@
 
     <!-- User profile -->
     <div class="d-flex w-100 mb-3 gap-3">
-        <img class="rounded-circle" style="height:3rem" src="@user?.Photo_Profil?.URL_Source" />
+        <div style="width: 3rem; height: 3rem">
+            <ProfilePicture ImageURL="@user?.Photo_Profil?.URL_Source"></ProfilePicture>
+        </div>
         <div class="d-flex flex-column justify-content-center">
             <p class="m-0">@(user?.Pseudo ?? string.Empty)</p>
         </div>
@@ -17,7 +19,7 @@
     <div class="p-4">
 
         <!-- Media carousel -->
-        <StackCarousel></StackCarousel>
+        <StackCarousel Medias="Post.Images"></StackCarousel>
 
         <!-- Interaction buttons -->
         <div class="d-flex position-relative mx-4 interaction-box overflow-hidden">

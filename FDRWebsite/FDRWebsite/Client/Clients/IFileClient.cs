@@ -7,6 +7,6 @@ namespace FDRWebsite.Client.Clients
     {
         [Multipart]
         [Post("/")]
-        Task<string?> UploadAsync([AliasAs("file")] StreamPart file);
+        Task<IEnumerable<string?>> UploadAsync([AliasAs("files")] IEnumerable<StreamPart> files);
     }
 }

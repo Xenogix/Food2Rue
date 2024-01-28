@@ -157,7 +157,7 @@ namespace FDRWebsite.Server.Repositories
                     new
                     {
                         Texte = model.Texte,
-                        Date_Publication = model.Date_Publication,
+                        Date_Publication = DateTime.UtcNow,
                         Fk_Parent = model.Parent,
                         Fk_Utilisateur = model.FK_Utilisateur,
                         Fk_Recette = model.Recette,

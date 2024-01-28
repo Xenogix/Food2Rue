@@ -1,0 +1,61 @@
+﻿@page "/post"
+@using FDRWebsite.Client.Components
+@using FDRWebsite.Shared.Helpers;
+
+<AuthorizeView Context="authContext">
+    <Authorized>
+        <div class="h-100 w-100 d-flex flex-column justify-content-center">
+            <div class="w-100 d-flex justify-content-center">
+                <div class="w-100 register-card register p-5" style="max-width: 32rem;">
+                    <h3 class="mb-3">Create a new post</h3>
+
+                    <EditForm EditContext="@editContext">
+                        <DataAnnotationsValidator />
+
+                        <!-- Post Text -->
+                        <div class="form-outline mb-4">
+                            <label class="form-label text-wrap" for="textField">Enter your text here :</label>
+                            <textarea id="textField" class="form-control mb-2" cols="40" rows="5" maxlength="255" style="max-height: 10rem;" @bind="postModel.Text" required></textarea>
+                            <ValidationMessage For="@(() => postModel.Text)"></ValidationMessage>
+                        </div>
+
+                        <!-- Post Images -->
+                        <div class="form-outline mb-2">
+                            <label class="form-label" for="imagesField">Images to share (max 10)</label>
+                            <InputFile id="imagesField" class="form-control mb-2" OnChange="InputFileChanged" onreset="" accept="@string.Join(", ",FileFormats.SUPPORTED_IMAGES)" multiple />
+                            <p>Supported formats : @string.Join(", ",FileFormats.SUPPORTED_IMAGES)</p>
+                            <ValidationMessage For="@(() => postModel.Images)"></ValidationMessage>
+                        </div>
+
+                        <div class="form-outline mb-2 d-flex flex-wrap"> 
+                            @foreach(var thumbnail in thumbnailImages)
+                            {
+                                <div class="mx-1 my-1" style="width : 6rem; height: 6rem; background-image:url(@thumbnail); background-size: cover; background-position: center;"></div>
+                            }
+                        </div>
+
+                        @if(tooManyImages)
+                        {
+                            <div class="form-outline mb-4 text-center">
+                                <p class="text-danger">Too many images were selected</p>
+                            </div>
+                        }
+
+                        <div class="form-outline mb-2">
+                            <button class="btn btn-primary btn-block mb-4 px-5 py-2 mx-auto" @onclick="SendPostAsync">Submit</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="d-flex flex-column align-self-center">
+            <i class="fa-solid fa-icicles mx-auto m-4" style="font-size:4em"></i>
+            <h3 class="mx-auto">You need to login to create a post</h3>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+                    

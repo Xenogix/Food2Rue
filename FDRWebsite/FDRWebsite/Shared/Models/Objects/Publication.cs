@@ -10,7 +10,7 @@ namespace FDRWebsite.Shared.Models
 
         public required string Texte { get; set; }
 
-        public required DateTime Date_Publication { get; set; }
+        public DateTime Date_Publication { get; set; }
 
         public required int FK_Utilisateur { get; set; }
 

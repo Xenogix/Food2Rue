@@ -99,11 +99,7 @@ namespace FDRWebsite.Client.Pages
             }
             else
             {
-                var resizedFile = await registerModel.ProfileImage.RequestImageFileAsync(registerModel.ProfileImage.ContentType, MAX_PROFILE_THUMBNAIL_SIZE, MAX_PROFILE_THUMBNAIL_SIZE);
-                var imageBuffer = new byte[resizedFile.Size];
-                using var stream = resizedFile.OpenReadStream();
-                await stream.ReadAsync(imageBuffer);
-                profileThumbnailImage = "data:image/png;base64," + Convert.ToBase64String(imageBuffer);
+                profileThumbnailImage = await FileHelpers.GetThumbnailFromFileAsync(registerModel.ProfileImage);
             }
 
             StateHasChanged();

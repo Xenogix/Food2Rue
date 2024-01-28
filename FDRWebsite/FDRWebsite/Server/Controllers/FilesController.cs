@@ -15,11 +15,24 @@ namespace FDRWebsite.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<string?> PostAsync([FromForm] IFormFile file)
+        public async Task<IEnumerable<string?>> PostAsync([FromForm] IEnumerable<IFormFile> files)
         {
-            if (file == null) return null;
-            using var stream = file.OpenReadStream();
-            return await fileStorage.StoreAsync(file.FileName, file.ContentType, stream);
+            var result = new List<string?>();
+
+            foreach (var file in files)
+            {
+                if (file == null)
+                {
+                    result.Add(null);
+                }
+                else
+                {
+                    using var stream = file.OpenReadStream();
+                    result.Add(await fileStorage.StoreAsync(file.FileName, file.ContentType, stream));
+                }
+            }
+
+            return result;
         }
     }
 }
