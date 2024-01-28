@@ -13,6 +13,9 @@ namespace FDRWebsite.Client.Pages
         [Inject]
         public required IPublicationClient PublicationClient { get; set; }
 
+        [Inject]
+        public required IAimeClient AimeClient { get; set; }
+
         [Parameter]
         public int BufferSize { get; set; } = 10;
 
@@ -23,12 +26,19 @@ namespace FDRWebsite.Client.Pages
 
         private Utilisateur? user { get; set; }
 
+        private int likeCount { get; set; }
+
+        private int postCount { get; set; }
+
         protected override async Task OnParametersSetAsync()
         {
             user = await UtilisateurClient.GetAsync(UserId);
 
             if (user != null)
+            {
                 await RefreshPostsAsync(user.ID);
+                await RefreshLikeCountAsync(user.ID);
+            }
 
             await base.OnParametersSetAsync();
         }
@@ -37,6 +47,7 @@ namespace FDRWebsite.Client.Pages
         {
             var filter = new PublicationParameters() { UserIDs = new int[] { userID } };
             UserPosts = await PublicationClient.GetFilteredAsync(filter);
+            postCount = UserPosts.Count();
         }
 
         private async Task RefreshPostsAsync(int userID)
@@ -48,6 +59,24 @@ namespace FDRWebsite.Client.Pages
         private void ClearPosts()
         {
             UserPosts = Array.Empty<Publication>();
+            postCount = 0;
+        }
+
+        private async Task LoadLikeCount()
+        {
+            var filter = new AimeParameters() { PublicationIDs = UserPosts.Select(p => p.ID) };
+            likeCount = (await AimeClient.GetFilteredAsync(filter)).Count();
+        }
+
+        private async Task RefreshLikeCountAsync(int userID)
+        {
+            ClearPosts();
+            await LoadPostsAsync(userID);
+        }
+
+        private void ClearLikeCount()
+        {
+            likeCount = 0;
         }
     }
 }

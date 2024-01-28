@@ -16,13 +16,15 @@
     else
     {
         <div class="row">
-            <div class="col">
-                <ProfilePicture ImageURL="@user.Photo_Profil.URL_Source"></ProfilePicture>
+            <div class="col mx-auto">
+                <div style="width: 10rem; height: 10rem;">
+                    <ProfilePicture ImageURL="@user.Photo_Profil.URL_Source"></ProfilePicture>
+                </div>
             </div>
         </div>
 
         <div class="row my-2">
-            <div class="col text-center">
+            <div class="col text-center">b45
                 <h2>@user.Pseudo</h2>
             </div>
         </div>
@@ -39,10 +41,12 @@
                             <div class="col text-center">
                                 <i class="fa-solid fa-heart"></i>
                                 <p class="my-0">Likes</p>
+                                <p class="my-0">@likeCount</p>
                             </div>
                             <div class="col text-center">
                                 <i class="fa-solid fa-comment"></i>
                                 <p class="my-0">Posts</p>
+                                <p class="my-0">@postCount</p>
                             </div>
                         </div>
                     </div>

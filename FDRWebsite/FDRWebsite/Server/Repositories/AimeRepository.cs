@@ -40,11 +40,6 @@ namespace FDRWebsite.Server.Repositories
             return (IEnumerable<Aime>)await connection.QueryAsync(SELECT_QUERY);
         }
 
-        /// <summary>
-        /// NOTE : todo class to prevent bug
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
         public async Task<Aime?> GetAsync(AimeKey key)
         {
             return (Aime?)await connection.QueryAsync(@$"{SELECT_QUERY} WHERE publication.id = @fk_publication utilisateur.id = @fk_utilisateur;",

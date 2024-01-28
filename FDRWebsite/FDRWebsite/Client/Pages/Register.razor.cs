@@ -70,7 +70,8 @@ namespace FDRWebsite.Client.Pages
                 ProfileImage = registerModel.ProfileImage!
             });
 
-            NavigationManager.NavigateTo("login");
+            if (wasSuccessfull)
+                NavigationManager.NavigateTo("login");
         }   
 
         private async void NextStepAsync() => await SetStepAsync(CurrentStep + 1);
