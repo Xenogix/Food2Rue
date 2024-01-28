@@ -46,7 +46,7 @@ namespace FDRWebsite.Server.Abstractions.Controllers
         }
 
         [HttpPut("{key}")]
-        public async Task<bool> PutAsync(KeyType key, ModelType model)
+        public async Task<bool> PutAsync([FromRoute] KeyType key, [FromBody] ModelType model)
         {
             return await repository.UpdateAsync(key, model);
         }

@@ -1,11 +1,13 @@
 ﻿@page "/register"
+@using FDRWebsite.Client.Components
+@using FDRWebsite.Shared.Helpers;
 
 <div class="h-100 w-100 d-flex flex-column justify-content-center">
     <div class="w-100 d-flex justify-content-center">
         <div class="w-100 register-card register p-5" style="max-width: 32rem;">
             <h3 class="mb-5">Create an account</h3>
 
-            <EditForm EditContext="@editContext" OnSubmit="@RegisterAsync">
+            <EditForm EditContext="@editContext">
                 <DataAnnotationsValidator />
                 @switch (CurrentStep)
                 {
@@ -23,6 +25,13 @@
                                 <label class="form-label" for="lastNameField">Last Name*</label>
                                 <input type="text" id="lastNameField" class="form-control mb-2" @bind-value="registerModel.LastName" required />
                                 <ValidationMessage For="@(() => registerModel.LastName)"></ValidationMessage>
+                            </div>
+
+                            <!-- Nickname Input -->
+                            <div class="form-outline mb-4">
+                                <label class="form-label" for="nicknameField">Nickname*</label>
+                                <input type="text" id="nicknameField" class="form-control mb-2" @bind-value="registerModel.NickName" required />
+                                <ValidationMessage For="@(() => registerModel.NickName)"></ValidationMessage>
                             </div>
 
                             <!-- Email Input -->
@@ -44,14 +53,14 @@
                         <div>
                             <!-- Birth Date Input -->
                             <div class="form-outline mb-4">
-                                <label class="form-label" for="birthDateField">Birth Date</label>
-                                <input type="date" id="birthDateField" class="form-control mb-2" @bind-value="registerModel.BirthDate" />
+                                <label class="form-label" for="birthDateField">Birth Date*</label>
+                                <input type="date" id="birthDateField" class="form-control mb-2" @bind-value="registerModel.BirthDate" required />
                                 <ValidationMessage For="@(() => registerModel.BirthDate)"></ValidationMessage>
                             </div>
 
                             <!-- Country Input -->
                             <div class="form-outline mb-4">
-                                <label class="form-label" for="countryField">Country</label>
+                                <label class="form-label" for="countryField">Country*</label>
                                 <select id="countryField" class="form-control mb-2" @bind="registerModel.Country">
                                     @foreach(var country in countries)
                                     {
@@ -70,18 +79,34 @@
                                 <input type="text" id="descriptionField" class="form-control mb-2" @bind-value="registerModel.ProfileDescription" />
                                 <ValidationMessage For="@(() => registerModel.ProfileDescription)"></ValidationMessage>
                             </div>
+
+                            <!-- Profile Image Input -->
+                            <div class="form-outline mb-4">
+                                <label class="form-label" for="imageField">Profile Picture</label>
+                                <InputFile id="imageField" class="form-control mb-2" OnChange="InputFileChangedAsync" onreset="" accept="@string.Join(", ",FileFormats.SUPPORTED_IMAGES)" required />
+                                <p>Supported formats : @string.Join(", ",FileFormats.SUPPORTED_IMAGES)</p>
+                                <ValidationMessage For="@(() => registerModel.ProfileImage)"></ValidationMessage>
+                            </div>
+
+                            <!-- Profile Image Thumbnail -->
+                            @if (profileThumbnailImage != null)
+                            {
+                                <div class="mx-auto mb-4" style="width: 10rem; height: 10rem;">
+                                    <ProfilePicture ImageURL="@profileThumbnailImage"></ProfilePicture>
+                                </div>
+                            }
                         </div>
                         break;
                 }
 
                 <div class="form-outline mb-3">
-                    <button class="btn btn-primary btn-block mb-4 ms-auto" @onclick="PreviousStateAsync" style="visibility: @(CurrentStep != Steps.RequiredInformations ? "visible" : "hidden")">Previous</button>
-                    <button class="btn btn-primary btn-block mb-4 ms-auto float-end" @onclick="NextStepAsync" style="display: @(CurrentStep != Steps.UserProfile ? "block" : "none")">Next</button>
-                    <input type="submit" class="btn btn-primary btn-block mb-4 float-end" value="Submit" style="display: @(CurrentStep == Steps.UserProfile ? "block" : "none")" />
+                    <button class="btn btn-primary btn-block mb-4" @onclick="PreviousStateAsync" style="visibility: @(CurrentStep != Steps.RequiredInformations ? "visible" : "hidden")">Previous</button>
+                    <button class="btn btn-primary btn-block mb-4 float-end" @onclick="NextStepAsync" style="display: @(CurrentStep != Steps.UserProfile ? "block" : "none")">Next</button>
+                    <button class="btn btn-primary btn-block mb-4 float-end" @onclick="RegisterAsync" style="display: @(CurrentStep == Steps.UserProfile ? "block" : "none")">Submit</button>
                 </div>
 
                 <div class="text-center">
-                    <p>Not a member? <a href="#!">Register</a></p>
+                    <p>Have an account ? <a href="/login">Login</a></p>
                 </div>
             </EditForm>
         </div>

@@ -16,17 +16,8 @@
     else
     {
         <div class="row">
-            <div class="col pentagon">
-                <div class="profile-image pentagon" style="background-image: url(https://buffer.com/library/content/images/2023/10/free-images.jpg)"></div>
-                <svg class="pentagon-filter" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <filter id="pentagon-filter-tag">
-                            <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur" />
-                            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="pentagon-filter-tag" />
-                            <feComposite in="SourceGraphic" in2="pentagon-filter-tag" operator="atop" />
-                        </filter>
-                    </defs>
-                </svg>
+            <div class="col">
+                <ProfilePicture ImageURL="@user.Photo_Profil.URL_Source"></ProfilePicture>
             </div>
         </div>
 

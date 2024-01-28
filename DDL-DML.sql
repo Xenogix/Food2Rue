@@ -59,7 +59,7 @@ CREATE TABLE  utilisateur (
   email VARCHAR(255) NOT NULL UNIQUE,
   fk_photo_profil INT DEFAULT 1 NOT NULL,
   pseudo VARCHAR(255) NOT NULL,
-  password VARCHAR(72) NOT NULL,
+  password VARCHAR(128) NOT NULL,
   date_naissance DATE NOT NULL,
   date_creation_profil DATE NOT NULL,
   description VARCHAR(255),

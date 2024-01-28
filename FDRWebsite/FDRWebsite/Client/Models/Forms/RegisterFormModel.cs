@@ -14,8 +14,8 @@ namespace FDRWebsite.Client.Models.Forms
         public string? LastName { get; set; }
 
         [Required(ErrorMessage = "Please fill this field")]
-        [MinLength(3, ErrorMessage = "Your nickname must be at least 3 characters long.")]
-        [MaxLength(16, ErrorMessage = "Your nickname must be at most 16 characters long.")]
+        [MinLength(3, ErrorMessage = "Your nickname must be at least 3 characters long")]
+        [MaxLength(16, ErrorMessage = "Your nickname must be at most 16 characters long")]
         public string? NickName { get; set; }
 
         [Required(ErrorMessage = "Please fill this field")]
@@ -23,16 +23,21 @@ namespace FDRWebsite.Client.Models.Forms
             ErrorMessage = "The provided email is not valid")]
         public string? Email { get; set; }
 
-        [Required(ErrorMessage = "Please fill this field")]
+        [Required(ErrorMessage = "Please specify a password")]
+        [RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$", ErrorMessage = "Your password must contain at least one letter and one number and at least 6 characters long")]
         public string? Password { get; set; }
 
+        [Required(ErrorMessage = "Please select a country")]
         public string? Country { get; set; }
 
+        [Required]
         public DateTime? BirthDate { get; set; }
 
         [Required(ErrorMessage = "Please fill this field")]
+        [StringLength(255, ErrorMessage = "The provided description should be less thant 255 characters long")]
         public string? ProfileDescription { get; set; }
 
+        [Required]
         public IBrowserFile? ProfileImage { get; set; }
     }
 }

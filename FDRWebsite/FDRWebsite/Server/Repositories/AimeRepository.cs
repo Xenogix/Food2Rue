@@ -3,10 +3,11 @@ using FDRWebsite.Server.Abstractions.Filters;
 using FDRWebsite.Server.Abstractions.Repositories;
 using FDRWebsite.Shared.Models.Objects;
 using Npgsql;
+using System.Reflection;
 
 namespace FDRWebsite.Server.Repositories
 {
-    public class AimeRepository : IRepositoryBase<Aime, int>
+    public class AimeRepository : IRepositoryBase<Aime, AimeKey>
     {
         private const string TABLE_NAME = "aime_publication_utilisateur";
 
@@ -22,12 +23,14 @@ namespace FDRWebsite.Server.Repositories
             this.connection = connection;
         }
 
-        public async Task<bool> DeleteAsync(int key)
+        public async Task<bool> DeleteAsync(AimeKey key)
         {
-            var affectedRows = await connection.ExecuteAsync(
-                $"DELETE FROM {TABLE_NAME} WHERE id = @ID",
-                new { ID = key }
-            );
+            var affectedRows = await connection.ExecuteAsync($"DELETE FROM {TABLE_NAME} WHERE publication.id = @fk_publication utilisateur.id = @fk_utilisateur;",
+            new
+            {
+                fk_publication = key.IdPublication,
+                fk_utilisateur = key.IdUtilisateur
+            });
 
             return affectedRows > 0;
         }
@@ -42,21 +45,27 @@ namespace FDRWebsite.Server.Repositories
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public async Task<Aime?> GetAsync(Tuple<int, int> key)
+        public async Task<Aime?> GetAsync(AimeKey key)
         {
-            return (Aime?)await connection.QueryAsync(@$"{SELECT_QUERY} WHERE publication.id = {key.Item1} utilisateur.id = {key.Item2};");
+            return (Aime?)await connection.QueryAsync(@$"{SELECT_QUERY} WHERE publication.id = @fk_publication utilisateur.id = @fk_utilisateur;",
+            new
+            {
+                fk_publication = key.IdPublication,
+                fk_utilisateur = key.IdUtilisateur
+            });
         }
 
         public async Task<IEnumerable<Aime>> GetAsync(IFilter filter)
         {
             return (IEnumerable<Aime>)await connection.QueryAsync(
-               $@"{SELECT_QUERY} WHERE {filter.GetFilterSQL};");
+               $@"{SELECT_QUERY} WHERE {filter.GetFilterSQL};",
+               filter.GetFilterParameters());
         }
 
-        public async Task<int> InsertAsync(Aime model)
+        public async Task<AimeKey> InsertAsync(Aime model)
         {
-            return await connection.QueryFirstAsync<int>(
-                @$"INSERT INTO {TABLE_NAME} (fk_publication, fk_utilisateur) VALUES (@FK_Publication, FK_Utilisateur) RETURNING id",
+            return await connection.QueryFirstAsync<AimeKey>(
+                @$"INSERT INTO {TABLE_NAME} (fk_publication, fk_utilisateur) VALUES (@FK_Publication, FK_Utilisateur) RETURNING fk_publication as IdPublication, fk_utilisateur as IdUtilisateur",
                 new
                 {
                     fk_publication = model.IdPublication,
@@ -64,18 +73,19 @@ namespace FDRWebsite.Server.Repositories
                 });
         }
 
-        public async Task<bool> UpdateAsync(Tuple<int, int> key, Aime model)
+        public async Task<bool> UpdateAsync(AimeKey key, Aime model)
         {
             var row = await connection.ExecuteAsync(
                 @$"UPDATE {TABLE_NAME} SET 
-                        fk_utilisateur = @FK_Utilisateur, 
-                        fk_publication = @FK_Publication,
-                        WHERE publication.id = {key.Item1} AND utilisateur.id = {key.Item2}",
+                        fk_utilisateur = @newIDUtilisateur, 
+                        fk_publication = @newIDPublication,
+                        WHERE publication.id = @oldIDUtilisateur AND utilisateur.id = @oldIDPublication",
                 new
                 {
-                    FK_Utilisateur = model.IdUtilisateur,
-                    FK_Publication = model.IdPublication,
-                    //todo
+                    newIDUtilisateur = model.IdUtilisateur,
+                    newIDPublication = model.IdPublication,
+                    oldIDUtilisateur = model.IdUtilisateur,
+                    oldIDPublication = model.IdPublication,
                 });
 
             return row > 0;

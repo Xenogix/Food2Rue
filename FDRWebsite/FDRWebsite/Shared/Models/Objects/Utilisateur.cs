@@ -20,9 +20,9 @@ namespace FDRWebsite.Shared.Models
 
         public required DateTime Date_Naissance { get; set; }
         
-        public required DateTime Date_Creation_Profil {  get; set; }
+        public DateTime Date_Creation_Profil {  get; set; }
 
-        public required string Description { get; set; }
+        public string? Description { get; set; }
 
         public required Pays Pays { get; set; }
     }

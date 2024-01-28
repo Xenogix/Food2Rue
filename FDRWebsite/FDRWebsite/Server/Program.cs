@@ -1,6 +1,7 @@
 using FDRWebsite.Server.Abstractions.Filters;
 using FDRWebsite.Server.Abstractions.Repositories;
 using FDRWebsite.Server.Authentication;
+using FDRWebsite.Server.Files;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
@@ -19,6 +20,7 @@ namespace FDRWebsite
             builder.Services.AddFilters();
             builder.Services.AddRepositories();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddScoped<FileStorageService>();
             builder.Services.AddScoped<AuthorizationProvider>();
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                             .AddJwtBearer(options =>

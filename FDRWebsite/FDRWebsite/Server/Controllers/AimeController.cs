@@ -5,9 +5,9 @@ using FDRWebsite.Shared.Models.Objects;
 
 namespace FDRWebsite.Server.Controllers
 {
-    public class AimeController : CRUDController<Aime, int, EmptyFilterParameters>
+    public class AimeController : CRUDController<Aime, AimeKey, EmptyFilterParameters>
     {
-        public AimeController(IRepositoryBase<Aime, int> repository, IFilter<EmptyFilterParameters> filter) : base(repository, filter)
+        public AimeController(IRepositoryBase<Aime, AimeKey> repository, IFilter<EmptyFilterParameters> filter) : base(repository, filter)
         {
         }
 
