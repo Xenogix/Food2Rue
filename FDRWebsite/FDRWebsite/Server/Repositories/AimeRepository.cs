@@ -53,6 +53,11 @@ namespace FDRWebsite.Server.Repositories
                $@"{SELECT_QUERY} WHERE {filter.GetFilterSQL};");
         }
 
+        public Task<Aime?> GetAsync(int key)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<int> InsertAsync(Aime model)
         {
             return await connection.QueryFirstAsync<int>(
@@ -79,6 +84,11 @@ namespace FDRWebsite.Server.Repositories
                 });
 
             return row > 0;
+        }
+
+        public Task<bool> UpdateAsync(int key, Aime model)
+        {
+            throw new NotImplementedException();
         }
     }
 }
