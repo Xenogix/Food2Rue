@@ -305,7 +305,7 @@ DECLARE
 BEGIN
   SELECT date_creation_profil INTO user_date_creation FROM utilisateur WHERE id = NEW.fk_utilisateur;
   IF (NEW.date_creation < user_date_creation) THEN
-    RAISE EXCEPTION 'Administrateur must be in utilisateur table';
+    RAISE EXCEPTION 'The creation date of the recipe must be more recent than the creation of the user.';
   END IF;
   RETURN NEW;
 END;
@@ -324,7 +324,7 @@ DECLARE
 BEGIN
   SELECT date_creation_profil INTO user_date_creation FROM utilisateur WHERE id = NEW.fk_utilisateur;
   IF (NEW.date_publication < user_date_creation) THEN
-    RAISE EXCEPTION 'Administrateur must be in utilisateur table';
+    RAISE EXCEPTION 'The creation date of the post must be more recent than the creation of the user.';
   END IF;
   RETURN NEW;
 END;
