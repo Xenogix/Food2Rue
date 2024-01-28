@@ -16,4 +16,5 @@
     transition-property: opacity;
     transition-duration: 0.2s;
     z-index: 1;
+    text-shadow: 3px 0 #fff, -3px 0 #fff, 0 3px #fff, 0 -3px #fff, 2px 2px #fff, -2px -2px #fff, 2px -2px #fff, -2px 2px #fff;
 }

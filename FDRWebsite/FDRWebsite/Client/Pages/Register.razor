@@ -1,0 +1,91 @@
+﻿@page "/register"
+
+<div class="h-100 w-100 d-flex flex-column justify-content-center">
+    <div class="w-100 d-flex justify-content-center">
+        <div class="w-100 register-card register p-5" style="max-width: 32rem;">
+            <h3 class="mb-5">Create an account</h3>
+
+            <EditForm EditContext="@editContext" OnSubmit="@RegisterAsync">
+                <DataAnnotationsValidator />
+                @switch (CurrentStep)
+                {
+                        case Steps.RequiredInformations:
+                        <div>
+                            <!-- First Name Input -->
+                            <div class="form-outline mb-4">
+                                <label class="form-label" for="firstNameField">First Name*</label>
+                                <input type="text" id="firstNameField" class="form-control mb-2" @bind-value="registerModel.FirstName" required />
+                                <ValidationMessage For="@(() => registerModel.FirstName)"></ValidationMessage>
+                            </div>
+
+                            <!-- Last Name Input -->
+                            <div class="form-outline mb-4">
+                                <label class="form-label" for="lastNameField">Last Name*</label>
+                                <input type="text" id="lastNameField" class="form-control mb-2" @bind-value="registerModel.LastName" required />
+                                <ValidationMessage For="@(() => registerModel.LastName)"></ValidationMessage>
+                            </div>
+
+                            <!-- Email Input -->
+                            <div class="form-outline mb-4">
+                                <label class="form-label" for="emailField">Email address*</label>
+                                <input type="email" id="emailField" class="form-control mb-2" @bind-value="registerModel.Email" required />
+                                <ValidationMessage For="@(() => registerModel.Email)"></ValidationMessage>
+                            </div>
+
+                            <!-- Password Input -->
+                            <div class="form-outline mb-4">
+                                <label class="form-label" for="passwordField">Password*</label>
+                                <input type="password" id="passwordField" class="form-control mb-2" @bind-value="registerModel.Password" required />
+                                <ValidationMessage For="@(() => registerModel.Password)"></ValidationMessage>
+                            </div>
+                        </div>
+                        break;
+                    case Steps.OptionalInformations:
+                        <div>
+                            <!-- Birth Date Input -->
+                            <div class="form-outline mb-4">
+                                <label class="form-label" for="birthDateField">Birth Date</label>
+                                <input type="date" id="birthDateField" class="form-control mb-2" @bind-value="registerModel.BirthDate" />
+                                <ValidationMessage For="@(() => registerModel.BirthDate)"></ValidationMessage>
+                            </div>
+
+                            <!-- Country Input -->
+                            <div class="form-outline mb-4">
+                                <label class="form-label" for="countryField">Country</label>
+                                <select id="countryField" class="form-control mb-2" @bind="registerModel.Country">
+                                    @foreach(var country in countries)
+                                    {
+                                        <option value="@country.Sigle">@country.Nom</option>
+                                    }
+                                </select>
+                                <ValidationMessage For="@(() => registerModel.Country)"></ValidationMessage>
+                            </div>
+                        </div>
+                        break;
+                    case Steps.UserProfile:
+                        <div>
+                            <!-- Profile Description Input -->
+                            <div class="form-outline mb-4">
+                                <label class="form-label" for="descriptionField">Profile Description</label>
+                                <input type="text" id="descriptionField" class="form-control mb-2" @bind-value="registerModel.ProfileDescription" />
+                                <ValidationMessage For="@(() => registerModel.ProfileDescription)"></ValidationMessage>
+                            </div>
+                        </div>
+                        break;
+                }
+
+                <div class="form-outline mb-3">
+                    <button class="btn btn-primary btn-block mb-4 ms-auto" @onclick="PreviousStateAsync" style="visibility: @(CurrentStep != Steps.RequiredInformations ? "visible" : "hidden")">Previous</button>
+                    <button class="btn btn-primary btn-block mb-4 ms-auto float-end" @onclick="NextStepAsync" style="display: @(CurrentStep != Steps.UserProfile ? "block" : "none")">Next</button>
+                    <input type="submit" class="btn btn-primary btn-block mb-4 float-end" value="Submit" style="display: @(CurrentStep == Steps.UserProfile ? "block" : "none")" />
+                </div>
+
+                <div class="text-center">
+                    <p>Not a member? <a href="#!">Register</a></p>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+                    

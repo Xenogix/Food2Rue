@@ -1,6 +1,7 @@
-﻿using Refit;
+﻿using FDRWebsite.Client.Clients;
+using Refit;
 
-namespace FDRWebsite.Client.Clients
+namespace FDRWebsite.Client.Abstractions.Clients
 {
     public static class RestClientRegister
     {
@@ -9,6 +10,7 @@ namespace FDRWebsite.Client.Clients
             services.AddRefitClient(typeof(IAuthenticationClient)).ConfigureHttpClient(x => { x.BaseAddress = new Uri($"{baseUrl}api/authentication"); });
             services.AddRefitClient(typeof(IPublicationClient)).ConfigureHttpClient(x => { x.BaseAddress = new Uri($"{baseUrl}api/publication"); });
             services.AddRefitClient(typeof(IUtilisateurClient)).ConfigureHttpClient(x => { x.BaseAddress = new Uri($"{baseUrl}api/utilisateurs"); });
+            services.AddRefitClient(typeof(IPaysClient)).ConfigureHttpClient(x => { x.BaseAddress = new Uri($"{baseUrl}api/pays"); });
 
             return services;
         }

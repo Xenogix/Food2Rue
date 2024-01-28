@@ -1,6 +1,6 @@
 using Blazored.LocalStorage;
+using FDRWebsite.Client.Abstractions.Clients;
 using FDRWebsite.Client.Authentication;
-using FDRWebsite.Client.Clients;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;

@@ -1,4 +1,4 @@
-using FDRWebsite.Client.Models;
+using FDRWebsite.Client.Models.Navigation;
 using FDRWebsite.Shared.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -30,6 +30,7 @@ namespace FDRWebsite.Client.Shared
             }
             else
             {
+                navigationEntries.Add(new() { Title = "Register", Url = "/register", Icon = "fa-user-tie" });
                 navigationEntries.Add(new() { Title = "Login", Url = "/login", Icon = "fa-key" });
             }
         }

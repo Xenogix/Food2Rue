@@ -2,7 +2,7 @@
 
 <div class="h-100 d-flex flex-column justify-content-center">
     <div class="w-100 login-card p-5" style="max-width: 32rem;">
-        <div class="">
+        <form FormName="login">
             <h3 class="my-5">Sign into you account</h3>
 
             <form class="needs-validation" @onsubmit="SignInAsync">
@@ -19,14 +19,14 @@
                     <input type="password" id="passwordField" class="form-control" @bind-value="password" required/>
                 </div>
 
-                <p class="col" style="visibility: @(loginHasFailed ? "visible" : "hidden")">The account does not exists or the password is incorrect</p>
+                <p class="text-danger" style="visibility: @(loginHasFailed ? "visible" : "hidden")">The account does not exists or the password is incorrect</p>
 
                 <input type="submit" class="btn btn-primary btn-block mb-4" value="Sign in" />
             </form>
 
             <div class="text-center">
-                <p>Not a member? <a href="#!">Register</a></p>
+                <p>Not a member? <a href="/register">Register</a></p>
             </div>
-        </div>
+        </form>
     </div>
 </div>
