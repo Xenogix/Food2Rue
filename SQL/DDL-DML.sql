@@ -93,6 +93,16 @@ CREATE TABLE  recette (
   FOREIGN KEY (fk_pays) REFERENCES pays(sigle) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE  note (
+  fk_utilisateur INT,
+  fk_recette INT,
+  note INT NOT NULL,
+  PRIMARY KEY (fk_utilisateur, fk_recette),
+  FOREIGN KEY (fk_utilisateur) REFERENCES utilisateur(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (fk_recette) REFERENCES recette(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT check_note CHECK (note >= 0 AND note <= 5)
+);
+
 CREATE TABLE  publication (
   id SERIAL,
   texte VARCHAR(255) NOT NULL,
@@ -122,16 +132,6 @@ CREATE TABLE  aime_publication_utilisateur (
   PRIMARY KEY (fk_publication, fk_utilisateur),
   FOREIGN KEY (fk_publication) REFERENCES publication(id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (fk_utilisateur) REFERENCES utilisateur(id) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE  note (
-  fk_utilisateur INT,
-  fk_recette INT,
-  note INT NOT NULL,
-  PRIMARY KEY (fk_utilisateur, fk_publication),
-  FOREIGN KEY (fk_utilisateur) REFERENCES utilisateur(id) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (fk_publication) REFERENCES publication(id) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT check_note CHECK (note >= 0 AND note <= 5)
 );
 
 CREATE TABLE  recette_image (
@@ -400,7 +400,6 @@ AFTER INSERT OR UPDATE ON ustensile
 DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW
 EXECUTE FUNCTION check_heritage_ustensile();
-
 
 BEGIN TRANSACTION;
 
@@ -866,5 +865,17 @@ VALUES (1, 2),
        (5, 2),
        (5, 3),
        (5, 4);
+
+ALTER SEQUENCE administrateur_id_seq RESTART WITH 100;
+ALTER SEQUENCE ajoutable_id_seq RESTART WITH 100;
+ALTER SEQUENCE image_id_seq RESTART WITH 100;
+ALTER SEQUENCE ingredient_id_seq RESTART WITH 100;
+ALTER SEQUENCE media_id_seq RESTART WITH 100;
+ALTER SEQUENCE publication_id_seq RESTART WITH 100;
+ALTER SEQUENCE recette_id_seq RESTART WITH 100;
+ALTER SEQUENCE tag_id_seq RESTART WITH 100;
+ALTER SEQUENCE ustensile_id_seq RESTART WITH 100;
+ALTER SEQUENCE utilisateur_id_seq RESTART WITH 100;
+ALTER SEQUENCE video_id_seq RESTART WITH 100;
 
 COMMIT TRANSACTION;
