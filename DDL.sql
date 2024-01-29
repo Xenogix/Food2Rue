@@ -93,6 +93,16 @@ CREATE TABLE  recette (
   FOREIGN KEY (fk_pays) REFERENCES pays(sigle) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE  note (
+  fk_utilisateur INT,
+  fk_recette INT,
+  note INT NOT NULL,
+  PRIMARY KEY (fk_utilisateur, fk_recette),
+  FOREIGN KEY (fk_utilisateur) REFERENCES utilisateur(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (fk_recette) REFERENCES recette(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT check_note CHECK (note >= 0 AND note <= 5)
+);
+
 CREATE TABLE  publication (
   id SERIAL,
   texte VARCHAR(255) NOT NULL,
@@ -122,16 +132,6 @@ CREATE TABLE  aime_publication_utilisateur (
   PRIMARY KEY (fk_publication, fk_utilisateur),
   FOREIGN KEY (fk_publication) REFERENCES publication(id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (fk_utilisateur) REFERENCES utilisateur(id) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE  note (
-  fk_utilisateur INT,
-  fk_recette INT,
-  note INT NOT NULL,
-  PRIMARY KEY (fk_utilisateur, fk_publication),
-  FOREIGN KEY (fk_utilisateur) REFERENCES utilisateur(id) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (fk_publication) REFERENCES publication(id) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT check_note CHECK (note >= 0 AND note <= 5)
 );
 
 CREATE TABLE  recette_image (
