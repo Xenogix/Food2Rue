@@ -1,0 +1,130 @@
+﻿@page "/recipe"
+@using FDRWebsite.Client.Components
+@using FDRWebsite.Shared.Helpers;
+
+<AuthorizeView Context="authContext">
+    <Authorized>
+        <div class="h-100 w-100 d-flex flex-column justify-content-center">
+            <div class="w-100 d-flex justify-content-center">
+                <div class="w-100 recipe-card register p-5" style="max-width: 52rem;">
+                    <h3 class="mb-3">Create a new recipe</h3>
+
+                    <EditForm EditContext="@editContext">
+                        <DataAnnotationsValidator />
+
+                        <div class="container">
+                            <div class="row">
+                                <div class="col">
+                                    <!-- Recipe Title -->
+                                    <div class="form-outline mb-4">
+                                        <label class="form-label text-wrap" for="titleField">Name</label>
+                                        <input type="text" id="titleField" class="form-control mb-2" @bind="recipeModel.Name" required />
+                                        <ValidationMessage For="@(() => recipeModel.Name)"></ValidationMessage>
+                                    </div>
+
+                                    <!-- Recipe Steps -->
+                                    <div class="form-outline mb-4">
+                                        <label class="form-label text-wrap" for="stepsField">Steps</label>
+                                        <textarea id="stepsField" class="form-control mb-2" cols="40" rows="5" maxlength="1023" style="max-height: 20rem; white-space: pre-line;" @bind="recipeModel.Steps" required></textarea>
+                                        <ValidationMessage For="@(() => recipeModel.Steps)"></ValidationMessage>
+                                    </div>
+
+                                    <!-- Recipe timings -->
+                                    <label class="form-label text-wrap"><b>Timings</b></label>
+
+                                    <div class="form-outline mb-4 d-flex flex-wrap justify-content-between">
+                                        <div>
+                                            <label class="form-label text-wrap" for="prepTimeField">Preparation time</label>
+                                            <input type="time" id="prepTimeField" class="form-control mb-2 w-auto" @bind="recipeModel.PrepTime" required />
+                                            <ValidationMessage For="@(() => recipeModel.PrepTime)"></ValidationMessage>
+                                        </div>
+
+                                        <div>
+                                            <label class="form-label text-wrap" for="cookingTimeField">Cooking time</label>
+                                            <input type="time" id="cookingTimeField" class="form-control mb-2 w-auto" @bind="recipeModel.CookingTime" />
+                                            <ValidationMessage For="@(() => recipeModel.CookingTime)"></ValidationMessage>
+                                        </div>
+
+                                        <div>
+                                            <label class="form-label text-wrap" for="restTimeField">Rest time</label>
+                                            <input type="time" id="restTimeField" class="form-control mb-2 w-auto" @bind="recipeModel.RestTime" />
+                                            <ValidationMessage For="@(() => recipeModel.RestTime)"></ValidationMessage>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <!-- Recipe Images -->
+                                    <div class="form-outline mb-2">
+                                        <label class="form-label" for="imagesField">Images to share (max 10)</label>
+                                        <InputFile id="imagesField" class="form-control mb-2" OnChange="InputFileChanged" onreset="" accept="@string.Join(", ",FileFormats.SUPPORTED_IMAGES)" multiple />
+                                        <p>Supported formats : @string.Join(", ",FileFormats.SUPPORTED_IMAGES)</p>
+                                        <ValidationMessage For="@(() => recipeModel.Images)"></ValidationMessage>
+                                    </div>
+
+                                    <div class="form-outline mb-2 d-flex flex-wrap">
+                                        @foreach (var thumbnail in thumbnailImages)
+                                        {
+                                            <div class="mx-1 my-1" style="width : 4rem; height: 4rem; background-image:url(@thumbnail); background-size: cover; background-position: center;"></div>
+                                        }
+                                    </div>
+
+                                    @if (tooManyImages)
+                                    {
+                                        <div class="form-outline mb-4 text-center">
+                                            <p class="text-danger">Too many images were selected</p>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <label class="form-label" for="ingredients">Select your ingredients</label>
+                                    <div class="form-outline mb-2 mx-auto d-flex justify-content-center">
+                                        <select class=" form-control mb-2" id="ingredients" @onchange="SelectIngredientChanged">
+                                            <option>Select an ingredient to add</option>
+                                            @if(ingredientList != null)
+                                            {
+                                                @foreach (var ingredient in ingredientList)
+                                                {
+                                                    <option value="@ingredient.ID">@ingredient.Nom_Ajoutable</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+
+                                    @if (recipeModel.Ingredients != null)
+                                    {
+                                        @foreach (var recipeIngredient in recipeModel.Ingredients)
+                                        {
+                                            <div class="d-flex justify-content-between">
+                                                <p class="my-0">@recipeIngredient.Nom_Ajoutable</p>
+                                                <button type="button" class="btn-close" aria-label="Close" @onclick="@(_ => RemoveIngredient(recipeIngredient.ID))"></button>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <div class="row mt-4">
+                                <div class="col">
+                                    <div class="form-outline mb-2 mx-auto d-flex justify-content-center">
+                                        <button class="btn btn-primary btn-block mb-4 px-5 py-2" @onclick="SendPostAsync">Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="d-flex flex-column align-self-center">
+            <i class="fa-solid fa-icicles mx-auto m-4" style="font-size:4em"></i>
+            <h3 class="mx-auto">You need to login to create a recipe</h3>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+                    

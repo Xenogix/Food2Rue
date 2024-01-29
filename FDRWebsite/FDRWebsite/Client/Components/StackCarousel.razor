@@ -3,16 +3,22 @@
     <i class="fa-solid fa-chevron-left my-auto carousel-carret" style="opacity: @(currentIndex > 0 ? 1 : 0)" @onclick="MovePrevious"></i>
 
     <div class="position-relative w-100" style="padding-bottom:100%">
-        @for (int i = GetTopIndex(); i >= Math.Max(currentIndex - 1, 0); --i)
+        @if (Medias != null)
         {
-            <div class="carousel-image" style="
+            @for (int i = GetTopIndex(); i >= Math.Max(currentIndex - 1, 0); --i)
+            {
+                <div class="carousel-image" style="
             top: @((i-currentIndex)*HEIGHT_SHIFT)px; bottom: @((i-currentIndex)*HEIGHT_SHIFT)px; left: @((i-currentIndex)*RIGHT_SHIFT)px;
             @((i == currentIndex - 1) || (i > currentIndex + MAX_STACK_SIZE) ? "opacity: 0; pointer-events: none;" : "")
             background-image:url(@(Medias.ElementAt(i).URL_Source))">
-            </div>
+                </div>
+            }
         }
     </div>
 
-    <i class="fa-solid fa-chevron-right my-auto carousel-carret" style="opacity: @(currentIndex < Medias.Count() - 1 ? 1 : 0)" @onclick="MoveNext"></i>
+    @if (Medias != null)
+    {
+        <i class="fa-solid fa-chevron-right my-auto carousel-carret" style="opacity: @(currentIndex < Medias.Count() - 1 ? 1 : 0)" @onclick="MoveNext"></i>
+    }
 </div>
 

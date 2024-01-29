@@ -25,7 +25,8 @@ namespace FDRWebsite.Client.Shared
                 var userID = authenticationState.User.FindFirst(UserClaimTypes.ID)!.Value;
 
                 navigationEntries.Add(new() { Title = "Profile", Url = $"/userprofile/{userID}", Icon = "fa-address-card" });
-                navigationEntries.Add(new() { Title = "Post", Url = "/post", Icon = "fa-square-plus" });
+                navigationEntries.Add(new() { Title = "New Recipie", Url = "/recipe", Icon = "fa-utensils" });
+                navigationEntries.Add(new() { Title = "New Post", Url = "/post", Icon = "fa-square-plus" });
                 navigationEntries.Add(new() { Title = "Logout", Url = "/logout", Icon = "fa-key" });
             }
             else

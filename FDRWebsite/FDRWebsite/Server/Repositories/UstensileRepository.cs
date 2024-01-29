@@ -93,7 +93,7 @@ namespace FDRWebsite.Server.Repositories
                 (@Nom, @Description, @Date_Publication, @Fk_Image, @Fk_Utilisateur, @Fk_Administrateur, @Est_Valide) RETURNING id",
                 new
                 {
-                    Nom = model.Nom,
+                    Nom = model.Nom_Ajoutable,
                     Description = model.Description,
                     Date_Publication = model.Date_Publication,
                     Fk_Image = model.Image.ID,
@@ -121,7 +121,7 @@ namespace FDRWebsite.Server.Repositories
                 WHERE id = @Id",
                 new
                 {
-                    Nom = model.Nom,
+                    Nom = model.Nom_Ajoutable,
                     Description = model.Description,
                     Date_Publication = model.Date_Publication,
                     Fk_Utilisateur = model.Fk_Utilisateur,

@@ -16,17 +16,20 @@ namespace FDRWebsite.Client.Components
 
         private int GetTopIndex()
         {
+            if (Medias == null) return 0;
             return Medias.Count() - 1;
         }
 
         private void MoveNext()
         {
+            if(Medias == null) return;
             currentIndex = Math.Min(currentIndex + 1, Medias.Count() - 1);
             StateHasChanged();
         }
 
         private void MovePrevious()
         {
+            if (Medias == null) return;
             currentIndex = Math.Max(currentIndex - 1, 0);
             StateHasChanged();
         }

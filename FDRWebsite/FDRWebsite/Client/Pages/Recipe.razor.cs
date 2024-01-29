@@ -11,13 +11,16 @@ using Microsoft.AspNetCore.Components.Forms;
 
 namespace FDRWebsite.Client.Pages
 {
-    public partial class Post
+    public partial class Recipe
     {
         [Inject]
         public required AuthenticationService AuthenticationService { get; set; }
 
         [Inject]
         public required PostService PostService { get; set; }
+
+        [Inject]
+        public required IIngredientClient IngredientClient { get; set; }
 
         [Inject]
         public required NavigationManager NavigationManager { get; set; }
@@ -29,9 +32,11 @@ namespace FDRWebsite.Client.Pages
 
         private ICollection<string> thumbnailImages = new List<string>();
 
+        private ICollection<Ingredient> ingredientList = new List<Ingredient>();
+
         private bool tooManyImages;
 
-        private PostFormModel postModel = new();
+        private RecipeFormModel recipeModel = new();
 
         private EditContext? editContext;
 
@@ -39,8 +44,10 @@ namespace FDRWebsite.Client.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            editContext = new(postModel);
+            recipeModel.Ingredients = new List<Ingredient>();
+            editContext = new(recipeModel);
             validationMessageStore = new(editContext);
+            ingredientList = (await IngredientClient.GetAsync()).ToList();
             await base.OnInitializedAsync();
         }
 
@@ -60,21 +67,30 @@ namespace FDRWebsite.Client.Pages
         {
             if (userID == null || !await ValidateEditContextAsync()) return;
 
-            var wasSuccessfull = await PostService.AddNewPostAsync(new PostAddModel()
-            { 
-                Text = postModel.Text!,
-                UserID = userID.Value,
-                Images = postModel.Images,
-            });
-
-            if (wasSuccessfull)
-                NavigationManager.NavigateTo("/");
+            //if (wasSuccessfull)
+                //NavigationManager.NavigateTo("/");
         }   
+
+        private void SelectIngredientChanged(ChangeEventArgs e)
+        {
+            if(!int.TryParse(e.Value as string, out var ingredientID)) return;
+            if (recipeModel.Ingredients!.Any(i => i.ID == ingredientID)) return;
+            var ingredient = ingredientList.Where(i => i.ID == ingredientID).FirstOrDefault();
+            if (ingredient == null) return;
+            recipeModel.Ingredients!.Add(ingredient);
+        }
+
+        private void RemoveIngredient(int id)
+        {
+            var ingredient = recipeModel.Ingredients!.Where(i => i.ID == id).FirstOrDefault();
+            if (ingredient == null) return;
+            recipeModel.Ingredients!.Remove(ingredient);
+        }
 
         private async Task InputFileChanged(InputFileChangeEventArgs e)
         {
             tooManyImages = false;
-            postModel.Images = null;
+            recipeModel.Images = null;
             thumbnailImages.Clear();
 
             if (e.FileCount > 10)
@@ -84,13 +100,13 @@ namespace FDRWebsite.Client.Pages
                 return;
             }
 
-            postModel.Images = e.GetMultipleFiles().ToList();
+            recipeModel.Images = e.GetMultipleFiles().ToList();
 
-            if (postModel.Images == null) return;
+            if (recipeModel.Images == null) return;
 
-            CheckFormField(nameof(postModel.Images));
+            CheckFormField(nameof(recipeModel.Images));
 
-            foreach(var image in postModel.Images)
+            foreach(var image in recipeModel.Images)
                 thumbnailImages.Add(await FileHelpers.GetThumbnailFromFileAsync(image));
 
             StateHasChanged();
@@ -100,8 +116,13 @@ namespace FDRWebsite.Client.Pages
         {
             if (editContext == null) return false;
 
-            return CheckFormField(nameof(postModel.Text)) &&
-                   CheckFormField(nameof(postModel.Images));
+            return CheckFormField(nameof(recipeModel.Name)) &&
+                   CheckFormField(nameof(recipeModel.Country)) &&
+                   CheckFormField(nameof(recipeModel.PrepTime)) &&
+                   CheckFormField(nameof(recipeModel.CookingTime)) &&
+                   CheckFormField(nameof(recipeModel.RestTime)) &&
+                   CheckFormField(nameof(recipeModel.Steps)) &&
+                   CheckFormField(nameof(recipeModel.Images));
         }
 
         private bool CheckFormField(string fieldName)
@@ -114,7 +135,7 @@ namespace FDRWebsite.Client.Pages
 
             if(!isValid) return false;
 
-            if (fieldName == nameof(postModel.Images) && !ValidateAndRemoveInvalidImages())
+            if (fieldName == nameof(recipeModel.Images) && !ValidateAndRemoveInvalidImages())
             {
                 validationMessageStore?.Add(fieldIdentifier, $"Files with the wrong format were removed");
             }
@@ -124,15 +145,15 @@ namespace FDRWebsite.Client.Pages
 
         private bool ValidateAndRemoveInvalidImages()
         {
-            if(postModel.Images == null) return true;
+            if(recipeModel.Images == null) return true;
 
             bool result = true;
 
-            foreach (var image in postModel.Images)
+            foreach (var image in recipeModel.Images)
             {
                 if (!FileFormats.IsSupportedImage(image.Name))
                 {
-                    postModel.Images.Remove(image);
+                    recipeModel.Images.Remove(image);
                     return false;
                 }
             }

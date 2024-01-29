@@ -14,6 +14,8 @@ namespace FDRWebsite.Client.Abstractions.Clients
             services.AddRefitClient(typeof(IImageClient)).ConfigureHttpClient(x => { x.BaseAddress = new Uri($"{baseUrl}api/image"); });
             services.AddRefitClient(typeof(IFileClient)).ConfigureHttpClient(x => { x.BaseAddress = new Uri($"{baseUrl}api/files"); });
             services.AddRefitClient(typeof(IAimeClient)).ConfigureHttpClient(x => { x.BaseAddress = new Uri($"{baseUrl}api/aime"); });
+            services.AddRefitClient(typeof(IIngredientClient)).ConfigureHttpClient(x => { x.BaseAddress = new Uri($"{baseUrl}api/ingredient"); });
+            services.AddRefitClient(typeof(IRecetteClient)).ConfigureHttpClient(x => { x.BaseAddress = new Uri($"{baseUrl}api/recette"); });
 
             return services;
         }

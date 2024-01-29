@@ -7,8 +7,7 @@ namespace FDRWebsite.Shared.Models
     {
         public int ID { get; set; }
 
-        [Column("nom_ajoutable")]
-        public required string Nom { get; set; }
+        public required string Nom_Ajoutable { get; set; }
 
         public required string Description { get; set; }
         public required DateTime Date_Publication { get; set; }

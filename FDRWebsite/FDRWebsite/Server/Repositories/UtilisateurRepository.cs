@@ -54,13 +54,14 @@ namespace FDRWebsite.Server.Repositories
                 $@"SELECT {TABLE_NAME}.id, {TABLE_NAME}.nom, {TABLE_NAME}.prenom, {TABLE_NAME}.email, {TABLE_NAME}.pseudo, {TABLE_NAME}.password, {TABLE_NAME}.description, {TABLE_NAME}.date_naissance, {TABLE_NAME}.date_creation_profil, media.id, media.url_source, pays.sigle, pays.nom FROM {TABLE_NAME} 
                 LEFT JOIN media ON {TABLE_NAME}.fk_photo_profil = media.id
                 LEFT JOIN pays ON {TABLE_NAME}.fk_pays = pays.sigle
-                ;",
+                WHERE utilisateur.id = @Key;",
                 (User, Image, Pays) =>
                 {
                     User.Photo_Profil = Image;
                     User.Pays = Pays;
                     return User;
                 },
+                new { Key = key },
                 splitOn: "id,sigle");
             return Utilisateurs.FirstOrDefault();
         }
